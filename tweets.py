@@ -40,6 +40,7 @@ class Query(object):
     def __init__(self, term):
         self._term = term
         self._tweets = []
+        self._avg_rate = None
 
     @property
     def term(self):
@@ -49,8 +50,18 @@ class Query(object):
     def tweets(self):
         return self._tweets
 
-    def add_tweet(self, text):
-        self.tweets.append(Tweet(text))
+    @property
+    def avg_rate(self):
+        return self._avg_rate
+
+    @avg_rate.setter
+    def avg_rate(self, avg_rate):
+        if not isinstance(avg_rate, (int, float)): 
+            raise ValueError ("avg_rate must be a float or int")
+        self._avg_rate = avg_rate 
+
+    def add_tweet(self, tweet):
+        self.tweets.append(tweet)
         return
 
 def stream_tweets(query, num_tweets):
@@ -71,4 +82,11 @@ def stream_tweets(query, num_tweets):
         query.add_tweet(tweet['text'])        
     return
 
-
+def search_tweets(query, num_tweets):
+    oauth = twitter.OAuth(ACCESS_TOKEN, ACCESS_SECRET, CONSUMER_KEY, CONSUMER_SECRET)
+    conn = twitter.Twitter(auth = oauth)
+    results = conn.search.tweets(q=query.term, lang = 'en', count = num_tweets)
+    for status in results['statuses']:
+        tweet = Tweet(status['text'])
+        query.add_tweet(tweet)
+    return
