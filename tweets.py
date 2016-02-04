@@ -84,9 +84,17 @@ def stream_tweets(query, num_tweets):
 
 def search_tweets(query, num_tweets):
     oauth = twitter.OAuth(ACCESS_TOKEN, ACCESS_SECRET, CONSUMER_KEY, CONSUMER_SECRET)
+    
     conn = twitter.Twitter(auth = oauth)
     results = conn.search.tweets(q=query.term, lang = 'en', count = num_tweets)
     for status in results['statuses']:
         tweet = Tweet(status['text'])
         query.add_tweet(tweet)
     return
+
+
+sample_query = Query('The Revenant')
+search_tweets(sample_query, 50)
+# Gabe, to access the text from the tweets:
+# sample_query.tweets[i].text for 0 <= i <= 37
+# (I'm not sure why it only returned 38 results when I requested 50)  
