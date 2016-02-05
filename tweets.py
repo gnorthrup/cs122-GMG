@@ -1,6 +1,8 @@
-### Run --sudo pip3 twitter-- on your VM ###
+### Run --sudo pip3 install twitter-- on your VM ###
 
 import twitter
+import requests
+import json
 
 ACCESS_TOKEN = '4870966822-1zGNGFWElLkgginMDYWJUGo4UKgsxOJcsMUScFS'
 ACCESS_SECRET = 'DH9WLbu1WGu3i2GgyTRC4Y3hgyJCbGUo9a1UAGGvedIqp'
@@ -41,6 +43,9 @@ class Query(object):
         self._term = term
         self._tweets = []
         self._avg_rate = None
+        self._tomato_rating = None
+        self._tomato_audiance_score = None
+        self._imdb_rating = None
 
     @property
     def term(self):
@@ -60,9 +65,54 @@ class Query(object):
             raise ValueError ("avg_rate must be a float or int")
         self._avg_rate = avg_rate 
 
+    @property
+    def tomato_rating(self):
+        return self._tomato_rating
+
+    @tomato_rating.setter
+    def tomato_rating(self, rating):
+        if not isinstance(rating, (int, float)):
+            raise ValueError ("rating must be a float or int")
+        self._tomato_rating = rating
+
+    @property
+    def tomato_audiance_score(self):
+        return self._tomato_audiance_score
+
+    @tomato_audiance_score.setter
+    def tomato_audiance_score(self, score):
+        if not isinstance(score, (int, float)):
+            raise ValueError ("score must be a float or int")
+        self._tomato_audiance_score = score
+
+    @property
+    def imdb_rating(self):
+        return self._imdb_rating
+
+    @imdb_rating.setter
+    def imdb_rating(self, rating):
+        if not isinstance(rating, (int, float)):
+            raise ValueError ("rating must be a float or int")
+        self._imdb_rating = rating
+
     def add_tweet(self, tweet):
         self.tweets.append(tweet)
         return
+
+    def find_conventional_ratings(self):
+        url = 'http://www.omdbapi.com/?'
+        parameters = '&tomatoes=true&r=json'
+        title_words = self.term.split()
+        title = 't={}'.format('+'.join(title_words))
+        url += title + parameters
+        
+        r = requests.get(url)
+        read = r.text
+        info_dict = json.loads(read)
+        self.tomato_rating = int(info_dict['tomatoMeter']) / 100
+        self.tomato_audiance_score = int(info_dict['tomatoUserMeter']) / 100
+        self.imdb_rating = float(info_dict['imdbRating']) / 10
+        return 
 
 def stream_tweets(query, num_tweets):
     '''
@@ -98,3 +148,6 @@ search_tweets(sample_query, 50)
 # Gabe, to access the text from the tweets:
 # sample_query.tweets[i].text for 0 <= i <= 37
 # (I'm not sure why it only returned 38 results when I requested 50)  
+
+# Rotten tomatoes rating is 82%
+rotten_tomatoes_rating = .82
