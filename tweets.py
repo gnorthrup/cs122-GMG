@@ -3,6 +3,7 @@
 import twitter
 import requests
 import json
+from tweets_db import update_tweets_table
 
 ACCESS_TOKEN = '4870966822-1zGNGFWElLkgginMDYWJUGo4UKgsxOJcsMUScFS'
 ACCESS_SECRET = 'DH9WLbu1WGu3i2GgyTRC4Y3hgyJCbGUo9a1UAGGvedIqp'
@@ -13,7 +14,7 @@ CONSUMER_SECRET = 'LR370Rd5T6bHxbkMwCF2lGg7lMhHpqx4nn4st1yTNQmhFwe0JM'
 # such as the text and the rating we will assign it.
 class Tweet(object):
     def __init__(self, text):
-        self._text = text
+        self._text = text.replace('"', "'")
         self._rate = None
 
     @property
@@ -30,8 +31,6 @@ class Tweet(object):
             raise ValueError ("rate must be a float or int")
         self._rate = rate 
 
-    # What methods would be useful for processing the text of
-    # a tweet?
 
 # This class will contain information about a specific search
 # somebody does. The term attribute will be the movie title 
@@ -114,22 +113,39 @@ class Query(object):
         self.imdb_rating = float(info_dict['imdbRating']) / 10
         return 
 
-def stream_tweets(query, num_tweets):
+
+
+def stream_tweets(num_tweets, update_db = [], query = None):
     '''
     Inputs:
-        query: a Query object
         num_tweets: the number of tweets to stream from twitter
+                    default value is NA, so the number of tweets
+                    collected is not limited
+        update_db: an optional parameter. If update_db is not equal to
+                    [] the function will load the tweets into a database.
+                    If specified, must be a list where the first entry is
+                    the name of the database and the second entry is the 
+                    name of the table for the tweets to be saved in.
+        query: an optional parameter of a Query object. Default value is
+                None. 
     '''
     oauth = twitter.OAuth(ACCESS_TOKEN, ACCESS_SECRET, CONSUMER_KEY, CONSUMER_SECRET)
 
     twitter_stream = twitter.TwitterStream(auth=oauth)
-    iterator = twitter_stream.statuses.filter(track = query.term, language = 'en')
+    if query == None:
+        iterator = twitter_stream.statuses.sample(language = 'en')
+    else:
+        iterator = twitter_stream.statuses.filter(track = query.term, language = 'en')
     count = 0
     for tweet in iterator:
         if count == num_tweets:
             break
+        print(count)
         count += 1
-        query.add_tweet(tweet['text'])        
+        if update_db != []:
+            update_tweets_table(update_db[0], update_db[1], tweet['text'].replace('"', "'"))
+        if query != None:
+            query.add_tweet(tweet['text'])        
     return
 
 def search_tweets(query, num_tweets):
