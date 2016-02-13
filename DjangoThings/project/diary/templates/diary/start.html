@@ -1,0 +1,9 @@
+<h1>This Is A Title<h1>
+
+<p> Welcome, my name is {{ name }}. My favorite foods are
+	<ui>
+		{% for food in foods%}
+		<li>{{ food }}</li>
+		{% endfor %}
+	</ui>
+</p>
