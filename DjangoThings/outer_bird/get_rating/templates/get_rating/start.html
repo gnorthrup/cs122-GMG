@@ -1,0 +1,16 @@
+{% extends 'get_rating/base.html' %}
+
+{% block body %}
+<title>Little Bird: The Ask Anything Engine</title>
+
+<form method="GET"> 
+	<center>
+		What do you want to know about? <input type="text" name="query"<br>
+		<input type="submit" value="Ask!">
+	</center>
+</form>
+{% if return %}
+<p> <center> This is the return value: {{ return }} </center> </p>
+{% endif %}
+
+{% endblock %}

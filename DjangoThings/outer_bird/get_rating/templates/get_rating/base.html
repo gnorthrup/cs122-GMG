@@ -1,0 +1,19 @@
+
+{% load staticfiles %}
+<html>
+<head>
+<link rel='stylesheet' type='text/css' href="{% static 'get_rating/style.css' %}" />
+</head>
+
+<body>
+<a href= "{% url 'search' %}"> Make a Search! </a> | <a href= "{% url 'about' %}"> Learn About Little Bird </a> | <a href= "{% url 'ack' %}"> Acknowledgements </a>
+
+<h1> <center> Little Bird </center> </h1>
+<h2> <center> The Ask Anything Engine </center> </h2>
+
+{% block body %}
+
+{% endblock %}
+</body>
+
+</html>
