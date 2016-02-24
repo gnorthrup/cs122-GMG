@@ -2,10 +2,10 @@
 
 import nltk
 import csv
-import os
-import string
+import random
 import nltk.sentiment.vader as vd
 import nltk
+from nltk.corpus import movie_reviews
 
 lexicon_filename = 'effectwordnet/EffectWordNet.csv'
 pos_corpus = 'tagged_reviews/pos'
@@ -48,45 +48,25 @@ def lexicon_analysis(query, lexicon_filename):
     query.avg_rate = (avg_rating / float(num_valenced)) * 50 + 50
 
 
-def train_naive_bayes(pos_corpus, neg_corpus):
-    rootdir = os.path.abspath(pos_corpus)
-    pos_rev = []
-    for l, s, files in os.walk(rootdir):
-        for file in files:
-            with open(pos_corpus + '/' + file) as f:
-                pos_rev.append(
-                    (f.read().translate(None, string.punctuation), 'positive'))
-
-    rootdir = os.path.abspath(neg_corpus)
-    neg_rev = []
-    for l, s, files in os.walk(rootdir):
-        for file in files:
-            with open(neg_corpus + '/' + file) as f:
-                neg_rev.append(
-                    (f.read().translate(None, string.punctuation), 'negative'))
-
-    reviews = []
-    for (words, sentiment) in pos_rev + neg_rev:
-        words_filtered = [word.lower()
-                          for word in words.split() if len(word) >= 3]
-        reviews.append((words_filtered, sentiment))
-
-    all_words = []
-    for (words, sentiment) in reviews:
-        all_words.extend(words)
-    wordlist = nltk.FreqDist(all_words)
+def train_naive_bayes():
+    documents = [(list(movie_reviews.words(fileid)), category)
+                 for category in movie_reviews.categories() for fileid in movie_reviews.fileids(category)]
+    random.shuffle(documents)
+    all_words = nltk.FreqDist(w.lower() for w in movie_reviews.words())
     global word_features
-    word_features = wordlist.keys()
-    training_set = nltk.classify.apply_features(extract_features, reviews)
-    classifier = nltk.NaiveBayesClassifier.train(training_set)
+    word_features = list(all_words)[:3000]
+    featuresets = [(document_features(d), c) for (d, c) in documents]
+    train_set, test_set = featuresets[1000:], featuresets[:1000]
+    classifier = nltk.NaiveBayesClassifier.train(train_set)
 
     return classifier
 
-def extract_features(document):
+
+def document_features(document):
     document_words = set(document)
     features = {}
     for word in word_features:
-        features['contains(%s)' % word] = (word in document_words)
+        features['contains({})'.format(word)] = (word in document_words)
     return features
 
 
