@@ -1,9 +1,13 @@
 ### Run --sudo pip3 install twitter-- on your VM ###
+ 
+# 4. more validation APIs?
+# 5. try markov quantification
+# 6. hist legend  
 
-import twitter
+import tweepy
 import requests
 import json
-#from tweets_db import update_tweets_table
+from tweets_db import update_tweets_table
 
 ACCESS_TOKEN = '4870966822-1zGNGFWElLkgginMDYWJUGo4UKgsxOJcsMUScFS'
 ACCESS_SECRET = 'DH9WLbu1WGu3i2GgyTRC4Y3hgyJCbGUo9a1UAGGvedIqp'
@@ -13,24 +17,25 @@ CONSUMER_SECRET = 'LR370Rd5T6bHxbkMwCF2lGg7lMhHpqx4nn4st1yTNQmhFwe0JM'
 # This class will store information about a single tweet,
 # such as the text and the rating we will assign it.
 class Tweet(object):
-    def __init__(self, text):
-        self._text = text.replace('"', "'")
-        self._rate = None
+    def __init__(self, text, date, i_d):
+        self.text = text.replace('"', "'")
+        self.date = date
+        self.id = i_d
+        self.rate = None
 
-    @property
-    def text(self):
-        return self._text
+    def __eq__(self, other): 
+        #is_equal = isinstance(other, self.__class__) and \
+        #           self.text == other.text and \
+        #           self.date == other.date and \
+        #           self.user == other.user
+        #return is_equal
+        return self.id == other.id
 
-    @property
-    def rate(self):
-        return self._rate
+    #def __ne__(self, other):
+    #    return not self.__eq__(other)
 
-    @rate.setter
-    def rate(self, rate):
-        if not isinstance(rate, (int, float)):
-            raise ValueError ("rate must be a float or int")
-        self._rate = rate
-
+    def __hash__(self):
+        return 0
 
 # This class will contain information about a specific search
 # somebody does. The term attribute will be the movie title
@@ -39,63 +44,17 @@ class Tweet(object):
 # term.
 class Query(object):
     def __init__(self, term):
-        self._term = term
-        self._tweets = []
-        self._avg_rate = None
-        self._tomato_rating = None
-        self._tomato_audiance_score = None
-        self._imdb_rating = None
-
-    @property
-    def term(self):
-        return self._term
-
-    @property
-    def tweets(self):
-        return self._tweets
-
-    @property
-    def avg_rate(self):
-        return self._avg_rate
-
-    @avg_rate.setter
-    def avg_rate(self, avg_rate):
-        if not isinstance(avg_rate, (int, float)):
-            raise ValueError ("avg_rate must be a float or int")
-        self._avg_rate = avg_rate
-
-    @property
-    def tomato_rating(self):
-        return self._tomato_rating
-
-    @tomato_rating.setter
-    def tomato_rating(self, rating):
-        if not isinstance(rating, (int, float)):
-            raise ValueError ("rating must be a float or int")
-        self._tomato_rating = rating
-
-    @property
-    def tomato_audiance_score(self):
-        return self._tomato_audiance_score
-
-    @tomato_audiance_score.setter
-    def tomato_audiance_score(self, score):
-        if not isinstance(score, (int, float)):
-            raise ValueError ("score must be a float or int")
-        self._tomato_audiance_score = score
-
-    @property
-    def imdb_rating(self):
-        return self._imdb_rating
-
-    @imdb_rating.setter
-    def imdb_rating(self, rating):
-        if not isinstance(rating, (int, float)):
-            raise ValueError ("rating must be a float or int")
-        self._imdb_rating = rating
+        self.term = term
+        self.tweets = set()
+        self.num_tweets = 0
+        self.avg_rate = None
+        self.tomato_rating = None
+        self.tomato_audiance_score = None
+        self.imdb_rating = None
 
     def add_tweet(self, tweet):
-        self.tweets.append(tweet)
+        self.tweets.add(tweet)
+        self.num_tweets += 1
         return
 
     def find_conventional_ratings(self):
@@ -113,7 +72,14 @@ class Query(object):
         self.imdb_rating = float(info_dict['imdbRating']) / 10
         return
 
-
+    def find_avg_rate(self):
+        rate_sum = 0
+        total = 0
+        for tweet in self.tweets:
+            rate_sum += tweet.rate
+            total += 1
+        self.avg_rate = rate_sum / total
+        return
 
 def stream_tweets(num_tweets, update_db = [], query = None):
     '''
@@ -140,30 +106,45 @@ def stream_tweets(num_tweets, update_db = [], query = None):
     for tweet in iterator:
         if count == num_tweets:
             break
-        print(count)
         count += 1
-        if update_db != []:
-            update_tweets_table(update_db[0], update_db[1], tweet['text'].replace('"', "'"))
-        if query != None:
-            query.add_tweet(tweet['text'])
+        print(count)
+        text = tweet.get('text', '')
+        date = tweet.get('created_at', '')
+        if update_db != []: 
+            update_tweets_table(update_db[0], update_db[1], update_db[2], text.replace('"', "'"), date)
+        if query != None:    
+            query.add_tweet(Tweet(text, date))
     return
 
-def search_tweets(query, num_tweets):
-    oauth = twitter.OAuth(ACCESS_TOKEN, ACCESS_SECRET, CONSUMER_KEY, CONSUMER_SECRET)
+def search_tweets(query, num_tweets, max_id = None, update_db = []):
+    '''
+    update_db: an optional parameter. If update_db is not equal to
+                    [] the function will load the tweets into a database.
+                    If specified, must be a list where the first entry is
+                    the name of the database and the second entry is the
+                    name of the table for the tweets to be saved in. The
+                    third entry in the list is a list of column names.
+    '''
+    auth = tweepy.AppAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
+    #if we want to add a time limit specify timeout parameter in API
+    #class (in secons). Default value is 60 sec.
+    api = tweepy.API(auth)
 
-    conn = twitter.Twitter(auth = oauth)
-    results = conn.search.tweets(q=query.term, lang = 'en', count = num_tweets)
-    for status in results['statuses']:
-        tweet = Tweet(status['text'])
+    tweets = api.search(q=query.term, lang = 'en', max_id = max_id, count = num_tweets)
+    min_id = float('inf')
+    for status in tweets:
+        tweet = Tweet(status.text, status.created_at, status.id)
         query.add_tweet(tweet)
-    return
+        if tweet.id < float('inf'):
+            min_id = tweet.id
+        if update_db != []:
+            update_tweets_table(update_db[0], update_db[1], update_db[2], tweet.text.replace('"', "'"), tweet.created_at)
+    return min_id - 1 
 
-
-sample_query = Query('The Revenant')
-search_tweets(sample_query, 50)
-# Gabe, to access the text from the tweets:
-# sample_query.tweets[i].text for 0 <= i <= 37
-# (I'm not sure why it only returned 38 results when I requested 50)
-
-# Rotten tomatoes rating is 82%
-rotten_tomatoes_rating = .82
+def collect_tweets(query, total_tweets):
+    max_id = None
+    #n = total_tweets // 100
+    #for i in range(n):
+    while query.num_tweets < total_tweets:
+        max_id = search_tweets(query, 100, max_id = max_id)
+    return 
