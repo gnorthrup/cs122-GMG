@@ -43,8 +43,8 @@ def lexicon_analysis(query, lexicon_filename):
     avg_rating = 0
     num_valenced = 0
     for tweet in tweets:
-        avg_rating += tweet._rate
-        num_valenced += (tweet._rate != 0)
+        avg_rating += tweet.rate
+        num_valenced += (tweet.rate != 0)
     query.avg_rate = (avg_rating / float(num_valenced)) * 50 + 50
 
 
@@ -79,8 +79,8 @@ def nltk_vader(query):
     avg_rating = 0
     num_valenced = 0
     for tweet in query.tweets:
-        avg_rating += tweet._rate
-        num_valenced += (tweet._rate != 0)
+        avg_rating += tweet.rate
+        num_valenced += (tweet.rate != 0)
     print(avg_rating)
     print(num_valenced)
     if num_valenced == 0:
