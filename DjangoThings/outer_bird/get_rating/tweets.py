@@ -1,18 +1,22 @@
 ### Run --sudo pip3 install twitter-- on your VM ###
  
 # 4. more validation APIs?
-# 5. try markov quantification
 # 6. hist legend  
 
 import tweepy
+import twitter
 import requests
 import json
+import bs4
 from tweets_db import update_tweets_table
 
 ACCESS_TOKEN = '4870966822-1zGNGFWElLkgginMDYWJUGo4UKgsxOJcsMUScFS'
 ACCESS_SECRET = 'DH9WLbu1WGu3i2GgyTRC4Y3hgyJCbGUo9a1UAGGvedIqp'
 CONSUMER_KEY = 'Kn5n5ZQjYcRgAyQ57iBH6AZrT'
 CONSUMER_SECRET = 'LR370Rd5T6bHxbkMwCF2lGg7lMhHpqx4nn4st1yTNQmhFwe0JM'
+
+GOOD_READS_KEY = 'atNmEak6yg8LAf2OQdBkIQ'
+GOOD_READS_SECRET = 'CjVgWwW5hbyZk9apGet26knMy4YSYvqK5Np5gIZCVCM'
 
 # This class will store information about a single tweet,
 # such as the text and the rating we will assign it.
@@ -43,21 +47,24 @@ class Tweet(object):
 # will be a list of Tweet objects with content related to the
 # term.
 class Query(object):
-    def __init__(self, term):
+    def __init__(self, term, artist = None):
         self.term = term
         self.tweets = set()
         self.num_tweets = 0
+        self.artist = artist
         self.avg_rate = None
         self.tomato_rating = None
         self.tomato_audiance_score = None
         self.imdb_rating = None
+        self.goodreads_rating = None
+        self.pitchfork_rating = None
 
     def add_tweet(self, tweet):
         self.tweets.add(tweet)
         self.num_tweets += 1
         return
 
-    def find_conventional_ratings(self):
+    def find_movie_ratings(self):
         url = 'http://www.omdbapi.com/?'
         parameters = '&tomatoes=true&r=json'
         title_words = self.term.split()
@@ -72,14 +79,19 @@ class Query(object):
         self.imdb_rating = float(info_dict['imdbRating']) / 10
         return
 
-    def find_avg_rate(self):
-        rate_sum = 0
-        total = 0
-        for tweet in self.tweets:
-            rate_sum += tweet.rate
-            total += 1
-        self.avg_rate = rate_sum / total
+    def find_book_rating(self):
+        key = GOOD_READS_KEY 
+        url = 'https://www.goodreads.com/search.xml?key={}&q={}'.format(key, self.term)
+        r = requests.get(url)
+        read = r.text
+        soup = bs4.BeautifulSoup(read, 'html5lib')
+        rating = soup.body.work.average_rating.contents[0]
+        self.goodreads_rating = float(rating) / 5
         return
+
+    def find_music_rating(self):
+        p = pitchfork.search(self.term, self.artist)
+        self.pitchfork_rating = p / 10
 
 def stream_tweets(num_tweets, update_db = [], query = None):
     '''
