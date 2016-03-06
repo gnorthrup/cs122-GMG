@@ -6,6 +6,6 @@ def thething(string):
 		query = get_rating.tweets.Query(string)
 		get_rating.tweets.collect_tweets(query,600)
 		get_rating.sentiment.nltk_vader(query)
-		return str(query.avg_rate)
+		return (str(query.avg_rate),query.best.text,query.worst.text)
 	else:
-		return ''
+		return ('','','')

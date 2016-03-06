@@ -73,9 +73,17 @@ def nltk_vader(query):
     sid = vd.SentimentIntensityAnalyzer()
     avg_rating = 0
     num_valenced = 0
+    best_score = 0
+    worst_score = 0
     for tweet in query.tweets:
         scores = sid.polarity_scores(tweet.text)
         tweet.rate = scores['compound']
+        if tweet.rate > best_score:
+            best = tweet
+            best_score = tweet.rate
+        elif tweet.rate < worst_score:
+            worst = tweet
+            worst_score = tweet.rate
         avg_rating += tweet.rate
         num_valenced += (tweet.rate != 0)
 
@@ -89,4 +97,6 @@ def nltk_vader(query):
         X_min = 15
         X_std = (query.avg_rate - X_min) / (X_max - X_min)
         query.avg_rate = X_std * 100
+        query.best = best
+        query.worst = worst
 
