@@ -1,6 +1,6 @@
 import sqlite3
 import re
-import tweets
+import get_rating.tweets
 
 def create_db(db_name, table_schemas):
     '''
@@ -19,7 +19,7 @@ def create_db(db_name, table_schemas):
     conn.close()
     return 
 
-def update_tweets_table(db, table, tweet_text):
+def update_tweets_table(db, table, columns, tweet_text, tweet_date):
     '''
     Write a function that will add on new tweet text and new
     tweet ids to the tweets table. Think about the issue of 
@@ -27,20 +27,13 @@ def update_tweets_table(db, table, tweet_text):
     '''
     conn = sqlite3.connect(db)
     c = conn.cursor()
-    command = 'INSERT INTO {} VALUES '.format(table)
-    #try:
-    values = '''("{}")'''.format(tweet_text)
-    #except OperationalError as err:
-    #    print(err)
-    #    print(values)
-    #try:
+    cols = ','.join(columns)
+    command = 'INSERT INTO {} ({}) VALUES '.format(table, cols)
+    values = '''("{}", "{}")'''.format(tweet_text, tweet_date)
     c.execute(command + values)
-    #except OperationalError as err:
-    #    print(err)
-    #    print(values)
     conn.commit()
     conn.close()
-    return 
+    return
 
 def is_match(search, text):
     match = re.findall(search, text)
@@ -59,5 +52,7 @@ def search_db(db, table, col, query):
         tweet = tweets.Tweet(result[0])
         query.add_tweet(tweet)
     return
+
+
 
 

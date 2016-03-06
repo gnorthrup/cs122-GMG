@@ -8,7 +8,7 @@ import twitter
 import requests
 import json
 import bs4
-from tweets_db import update_tweets_table
+from get_rating.tweets_db import update_tweets_table
 
 ACCESS_TOKEN = '4870966822-1zGNGFWElLkgginMDYWJUGo4UKgsxOJcsMUScFS'
 ACCESS_SECRET = 'DH9WLbu1WGu3i2GgyTRC4Y3hgyJCbGUo9a1UAGGvedIqp'
