@@ -7,13 +7,14 @@ def create_hist(query, category = None):
     been called already, and if is_movie = True, query.find_conventinal_ratings()
     must be called. 
     '''
-    rates = [t.norm_rate for t in query.tweets if t.norm_rate != 0]
-    plt.hist(rates)
+    rates = [t.norm_rate for t in query.tweets if t.norm_rate != 50]
+    print(rates)
+    plt.hist(rates,bins=20)
     plt.xlabel('Ratings')
     plt.title('Distribution of {} Sentiments'.format(query.term))
     plt.grid(True)
     plt.axvline(query.avg_rate, color = 'g', label = 'Average Rating', linestyle = 'dashed', linewidth=2)
-    plt.xlim([0, 1])
+    #plt.xlim([0, 1])
     plt.gcf().subplots_adjust(right=0.75)
     if category == 'movie':
         plt.axvline(query.tomato_rating, color = 'r', label = 'Rotten Tomato Rating', linestyle='dashed', linewidth=2)
