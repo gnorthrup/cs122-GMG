@@ -26,6 +26,7 @@ class Tweet(object):
         self.date = date
         self.id = i_d
         self.rate = None
+        self.norm_rate = None
 
     def __eq__(self, other): 
         #is_equal = isinstance(other, self.__class__) and \

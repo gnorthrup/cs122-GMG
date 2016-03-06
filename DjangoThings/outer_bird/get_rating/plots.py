@@ -1,5 +1,7 @@
 import numpy as np
-import matplotlib.pyplot as plt 
+import matplotlib.pyplot as plt
+from wordcloud import WordCloud 
+import re
 
 def create_hist(query, category = None):
     '''
@@ -7,13 +9,13 @@ def create_hist(query, category = None):
     been called already, and if is_movie = True, query.find_conventinal_ratings()
     must be called. 
     '''
-    rates = [t.rate for t in query.tweets]
-    plt.hist(rates)
+    rates = [t.norm_rate for t in query.tweets if t.norm_rate != 50]
+    plt.hist(rates,bins=20)
     plt.xlabel('Ratings')
     plt.title('Distribution of {} Sentiments'.format(query.term))
     plt.grid(True)
     plt.axvline(query.avg_rate, color = 'g', label = 'Average Rating', linestyle = 'dashed', linewidth=2)
-    plt.xlim([0, 1])
+    #plt.xlim([0, 1])
     plt.gcf().subplots_adjust(right=0.75)
     if category == 'movie':
         plt.axvline(query.tomato_rating, color = 'r', label = 'Rotten Tomato Rating', linestyle='dashed', linewidth=2)
@@ -26,4 +28,14 @@ def create_hist(query, category = None):
 
     return plt
 
+def create_cloud(query):
+    stop_words = set(['RT','https','http','co'] + query.term.split())
+    text = ''
+    for t in query.tweets:
+        tweet_stripped = [word for word in re.findall(r"[\w']+",t.text) if word not in stop_words]
+        text += ' '.join(tweet_stripped) + ' '
+
+    cloud = WordCloud().generate(text)
+
+    return plt.imshow(cloud)
 
