@@ -8,7 +8,6 @@ def create_hist(query, category = None):
     must be called. 
     '''
     rates = [t.norm_rate for t in query.tweets if t.norm_rate != 50]
-    print(rates)
     plt.hist(rates,bins=20)
     plt.xlabel('Ratings')
     plt.title('Distribution of {} Sentiments'.format(query.term))

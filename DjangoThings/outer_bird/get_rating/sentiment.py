@@ -90,8 +90,6 @@ def nltk_vader(query):
         avg_rating += tweet.rate
         num_valenced += (tweet.rate != 0)
 
-    print(avg_rating)
-    print(num_valenced)
     if num_valenced == 0:
         pass
     else:
