@@ -11,4 +11,4 @@ def thething(string):
 		plt = get_rating.plots.create_hist(query)
 		return (str(np.round(query.avg_rate,2)),query.best.text,query.worst.text,plt)
 	else:
-		return ('','','')
+		return ('','','','')

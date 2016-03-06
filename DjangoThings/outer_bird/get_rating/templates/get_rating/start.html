@@ -10,7 +10,17 @@
 	</center>
 </form>
 {% if return %}
-<p> <center> This is the return value: {{ return }} </center> </p>
+<p> <center> {{query}} has a rating of {{ return }} according to little bird </center> </p>
 {% endif %}
+
+{% if best %}
+<p style="text-align:left;">
+The most positive tweet: {{best}}
+<br>
+<br>
+<span style="float:right;"> The most negative tweet: {{worst}} </span>
+</p>
+{% endif %}
+
 
 {% endblock %}

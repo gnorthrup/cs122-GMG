@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.http import HttpResponse
 from get_rating.doesthething import thething
 
 def start(request):
