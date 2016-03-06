@@ -11,7 +11,6 @@ lexicon_filename = 'effectwordnet/EffectWordNet.csv'
 pos_corpus = 'tagged_reviews/pos'
 neg_corpus = 'tagged_reviews/neg'
 
-
 def lexicon_analysis(query, lexicon_filename):
     '''
     Use EffectWordNet lexicon to classify value of tweet
@@ -72,18 +71,22 @@ def document_features(document):
 
 def nltk_vader(query):
     sid = vd.SentimentIntensityAnalyzer()
-    for tweet in query.tweets:
-        scores = sid.polarity_scores(tweet.text)
-        tweet.rate = scores['compound']
-
     avg_rating = 0
     num_valenced = 0
     for tweet in query.tweets:
+        scores = sid.polarity_scores(tweet.text)
+        tweet.rate = scores['compound']
         avg_rating += tweet.rate
         num_valenced += (tweet.rate != 0)
+
     print(avg_rating)
     print(num_valenced)
     if num_valenced == 0:
         pass
     else:
         query.avg_rate = (avg_rating / float(num_valenced)) * 50 + 50
+        X_max = 85
+        X_min = 15
+        X_std = (query.avg_rate - X_min) / (X_max - X_min)
+        query.avg_rate = X_std * 100
+

@@ -8,4 +8,4 @@ def thething(string):
 		get_rating.sentiment.nltk_vader(query)
 		return str(query.avg_rate)
 	else:
-		return 'Need query'
+		return ''
