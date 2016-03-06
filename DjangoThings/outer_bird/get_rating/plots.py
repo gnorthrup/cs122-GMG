@@ -1,5 +1,7 @@
 import numpy as np
-import matplotlib.pyplot as plt 
+import matplotlib.pyplot as plt
+from wordcloud import WordCloud 
+import re
 
 def create_hist(query, category = None):
     '''
@@ -26,4 +28,14 @@ def create_hist(query, category = None):
 
     return plt
 
+def create_cloud(query):
+    stop_words = set(['RT','https','http','co'] + query.term.split())
+    text = ''
+    for t in query.tweets:
+        tweet_stripped = [word for word in re.findall(r"[\w']+",t.text) if word not in stop_words]
+        text += ' '.join(tweet_stripped) + ' '
+
+    cloud = WordCloud().generate(text)
+
+    return plt.imshow(cloud)
 
