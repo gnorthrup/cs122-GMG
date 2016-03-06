@@ -75,9 +75,12 @@ def nltk_vader(query):
     num_valenced = 0
     best_score = 0
     worst_score = 0
+    X_max = 85
+    X_min = 15
     for tweet in query.tweets:
         scores = sid.polarity_scores(tweet.text)
         tweet.rate = scores['compound']
+        tweet.norm_rate = ((tweet.rate * 50 + 50) - X_min / (X_max - X_min)) * 100
         if tweet.rate > best_score:
             best = tweet
             best_score = tweet.rate
@@ -93,8 +96,6 @@ def nltk_vader(query):
         pass
     else:
         query.avg_rate = (avg_rating / float(num_valenced)) * 50 + 50
-        X_max = 85
-        X_min = 15
         X_std = (query.avg_rate - X_min) / (X_max - X_min)
         query.avg_rate = X_std * 100
         query.best = best

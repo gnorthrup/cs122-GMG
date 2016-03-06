@@ -7,7 +7,7 @@ def create_hist(query, category = None):
     been called already, and if is_movie = True, query.find_conventinal_ratings()
     must be called. 
     '''
-    rates = [t.rate for t in query.tweets]
+    rates = [t.norm_rate for t in query.tweets]
     plt.hist(rates)
     plt.xlabel('Ratings')
     plt.title('Distribution of {} Sentiments'.format(query.term))
