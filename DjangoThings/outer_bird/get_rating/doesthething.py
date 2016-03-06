@@ -1,5 +1,5 @@
-import tweets
-import sentiment
+import get_rating.tweets
+import get_rating.sentiment
 
 def thething(string):
 	if len(string) != 0:

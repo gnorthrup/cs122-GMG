@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from doesthething import thething
+from get_rating.doesthething import thething
 
 def start(request):
 	if request.method == 'GET':
