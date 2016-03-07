@@ -1,7 +1,9 @@
 html {
 	background-color: #d0e4fe;
-	font-family = Arial;
+	font-family = Arial, Helvetica, sans-serif;
 }
 body {
 	background-image: url("images/pink-little-bird.png");
+    background-repeat: no-repeat;
+    background-position: right center;     
 }

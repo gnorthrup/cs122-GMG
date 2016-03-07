@@ -6,11 +6,17 @@
 <form method="GET"> 
 	<center>
 		What do you want to know about? <input type="text" name="query"<br>
+        <select name="category"> 
+            <option value="none">None of these</option>
+            <option value="movie">Movie</option>
+            <option value="book">Book</option>
+            <option value="album">Artist, Album</option>
+        </select>
 		<input type="submit" value="Ask!">
 	</center>
 </form>
 {% if return %}
-<p> <center> {{query}} has a rating of {{ return }} according to little bird </center> </p>
+<p> <center> {{query}} has a rating of {{ return }} according to Little Bird </center> </p>
 {% endif %}
 
 {% if best %}
@@ -18,7 +24,7 @@
 The most positive tweet: {{best}}
 <br>
 <br>
-<span style="float:right;"> The most negative tweet: {{worst}} </span>
+The most negative tweet: {{worst}} </span>
 </p>
 {% endif %}
 
