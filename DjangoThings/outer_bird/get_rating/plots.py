@@ -25,8 +25,9 @@ def create_hist(query, category = None):
     if category == 'album':
         plt.axvline(query.pitchfork_rating, color = 'r', label = 'Pitchfork Rating', linestyle = 'dashed', linewidth=2)
     plt.legend(bbox_to_anchor=(1., 1),loc=2, borderaxespad=0, fontsize='small')
-
-    return plt
+    plt.savefig('get_rating/static/get_rating/images/hist.png')
+    plt.close()
+    return
 
 def create_cloud(query):
     stop_words = set(['RT','https','http','co'] + query.term.split())
@@ -36,6 +37,7 @@ def create_cloud(query):
         text += ' '.join(tweet_stripped) + ' '
 
     cloud = WordCloud().generate(text)
-
-    return plt.imshow(cloud)
-
+    plt.imshow(cloud)
+    plt.savefig('get_rating/static/get_rating/images/cloud.png')
+    plt.close()
+    return
