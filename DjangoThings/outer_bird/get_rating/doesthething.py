@@ -7,6 +7,8 @@ def thething(string, category):
 	if len(string) != 0:
 		query = get_rating.tweets.Query(string)
 		get_rating.tweets.collect_tweets(query,600)
+        if query.try_again:
+            return ('Not enough tweets! Pelase try again.', '', '', '')
 		get_rating.sentiment.nltk_vader(query)
 		plt = get_rating.plots.create_hist(query)
 		get_rating.plots.create_cloud(query)
