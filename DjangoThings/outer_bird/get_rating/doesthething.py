@@ -10,7 +10,7 @@ def thething(string, category):
         if query.try_again:
             return ('Not enough tweets! Pelase try again.', '', '', '')
 		get_rating.sentiment.nltk_vader(query)
-		plt = get_rating.plots.create_hist(query)
+		plt = get_rating.plots.create_hist(query,category)
 		get_rating.plots.create_cloud(query)
 		return (str(np.round(query.avg_rate,2)),query.best.text,query.worst.text,plt)
 	else:
