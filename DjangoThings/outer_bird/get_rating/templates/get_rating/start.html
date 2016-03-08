@@ -16,16 +16,16 @@
 	</center>
 </form>
 {% if return %}
-<p> <center> {{query}} has a rating of {{ return }}% positive according to Little Bird </center> </p>
+<p> <center> {{query}} has a rating of <b> {{ return }}% </b> positive according to Little Bird </center> </p>
 {% endif %}
 
 {% if best %}
 <center>
-<p style="text-align:left;">
-The most positive tweet: {{best}}
+<p style="text-align:center;">
+<b>The most positive tweet: </b> {{best}}
 <br>
 <br>
-The most negative tweet: {{worst}} </span>
+<b> The most negative tweet: </b> {{worst}} </span>
 </p>
 </center>
 {% endif %}
