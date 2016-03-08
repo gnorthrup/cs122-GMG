@@ -48,4 +48,5 @@ def create_cloud(query):
     fig.add_axes(ax)
     ax.imshow(cloud)
     fig.savefig('get_rating/static/get_rating/images/cloud.png',aspect='normal')
+    plt.close()
     return
