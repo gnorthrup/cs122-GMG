@@ -59,13 +59,14 @@ class Query(object):
         self.imdb_rating = None
         self.goodreads_rating = None
         self.pitchfork_rating = None
+        self.try_again = False
 
     def add_tweet(self, tweet):
         self.tweets.add(tweet)
         self.num_tweets += 1
         return
 
-    def find_movie_ratings(self):
+    def find_movie_rating(self):
         url = 'http://www.omdbapi.com/?'
         parameters = '&tomatoes=true&r=json'
         title_words = self.term.split()
@@ -156,8 +157,12 @@ def search_tweets(query, num_tweets, max_id = None, update_db = []):
 
 def collect_tweets(query, total_tweets):
     max_id = None
-    #n = total_tweets // 100
-    #for i in range(n):
-    while query.num_tweets < total_tweets:
-        max_id = search_tweets(query, 100, max_id = max_id)
+    n = total_tweets // 100
+    for i in range(n):
+    #while query.num_tweets < total_tweets:
+        try:
+            max_id = search_tweets(query, 100, max_id = max_id)
+        except:
+            query.try_agin = True
+            break
     return 
