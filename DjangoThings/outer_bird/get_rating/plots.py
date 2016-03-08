@@ -32,7 +32,7 @@ def create_hist(query, category = None):
     return
 
 def create_cloud(query):
-    stop_words = set(['RT','https','http','co','via'] + query.term.split() + query.term.lower().split())
+    stop_words = set(['RT','https','http','co','via','amp'] + query.term.split() + query.term.lower().split() + query.term.upper().split())
     text = ''
     for t in query.tweets:
         tweet_stripped = [word for word in re.findall(r"[\w']+",t.text) if word not in stop_words]
