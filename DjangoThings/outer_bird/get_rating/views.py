@@ -6,7 +6,7 @@ def start(request):
 	if request.method == 'GET':
 		string = request.GET.get('query', '')
 		category = request.GET.get('category', '')
-		newstring, best, worst, plt = thething(string)
+		newstring, best, worst, plt = thething(string, category)
 		c = {'return':newstring, 'best':best, 'worst':worst, 'plot':plt, 'query':string}
 		return render(request, 'get_rating/start.html', c)
 	else:
