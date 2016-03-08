@@ -92,8 +92,11 @@ class Query(object):
         return
 
     def find_music_rating(self):
-        p = pitchfork.search(self.term, self.artist)
+        artist = self.term.split(',')[0].strip()
+        album = self.term.split(',')[1].strip()
+        p = pitchfork.search(album, artist)
         self.pitchfork_rating = p / 10
+        return 
 
 def stream_tweets(num_tweets, update_db = [], query = None):
     '''
