@@ -16,21 +16,25 @@
 	</center>
 </form>
 {% if return %}
-<p> <center> {{query}} has a rating of {{ return }} according to Little Bird </center> </p>
+<p> <center> {{query}} has a rating of {{ return }}% positive according to Little Bird </center> </p>
 {% endif %}
 
 {% if best %}
+<center>
 <p style="text-align:left;">
 The most positive tweet: {{best}}
 <br>
 <br>
 The most negative tweet: {{worst}} </span>
 </p>
+</center>
 {% endif %}
 
-{% if return %}
+{% if best %}
+<center>
 <img src="/get_rating/static/get_rating/images/hist.png" alt="Distribution of Tweet Sentiments" width="400" height="300">
 <img src="/get_rating/static/get_rating/images/cloud.png" alt="Word Cloud" width="400" height="300">
+</center>
 {% endif %}
 
 {% endblock %}
