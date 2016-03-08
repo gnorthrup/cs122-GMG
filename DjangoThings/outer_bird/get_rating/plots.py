@@ -23,7 +23,7 @@ def create_hist(query, category = None):
     if category == 'book':
         query.find_book_rating()
         plt.axvline(query.good_reads_rating, color = 'r', label = 'GoodReads Rating', linestyle='dashed', linewidth=2)
-    if category == 'artist,album':
+    if category == 'album':
         query.find_music_rating()
         plt.axvline(query.pitchfork_rating, color = 'r', label = 'Pitchfork Rating', linestyle = 'dashed', linewidth=2)
     plt.legend(bbox_to_anchor=(1., 1),loc=2, borderaxespad=0, fontsize='small')
@@ -32,7 +32,7 @@ def create_hist(query, category = None):
     return
 
 def create_cloud(query):
-    stop_words = set(['RT','https','http','co'] + query.term.split())
+    stop_words = set(['RT','https','http','co','via'] + query.term.split() + query.term.lower().split())
     text = ''
     for t in query.tweets:
         tweet_stripped = [word for word in re.findall(r"[\w']+",t.text) if word not in stop_words]
