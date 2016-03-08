@@ -3,10 +3,10 @@
 {% block body %}
 <title>Little Bird: The Ask Anything Engine</title>
 
-<form method="GET"> 
+<form method="GET">
 	<center>
 		What do you want to know about? <input type="text" name="query"<br>
-        <select name="category"> 
+        <select name="category">
             <option value="none">None of these</option>
             <option value="movie">Movie</option>
             <option value="book">Book</option>
@@ -28,5 +28,8 @@ The most negative tweet: {{worst}} </span>
 </p>
 {% endif %}
 
+{% if return %}
+<img src="/get_rating/static/get_rating/images/hist.png">
+{% endif %}
 
 {% endblock %}
