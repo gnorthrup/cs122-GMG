@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from wordcloud import WordCloud 
 import re
+from PIL import Image
 
 def create_hist(query, category = None):
     '''
@@ -38,8 +39,13 @@ def create_cloud(query):
         tweet_stripped = [word for word in re.findall(r"[\w']+",t.text) if word not in stop_words]
         text += ' '.join(tweet_stripped) + ' '
 
-    cloud = WordCloud().generate(text)
-    plt.imshow(cloud)
-    plt.savefig('get_rating/static/get_rating/images/cloud.png')
-    plt.close()
+    twitter_mask = np.array(Image.open('get_rating/static/get_rating/images/mask.jpg'))
+    twitter_mask = np.abs(twitter_mask - 1)
+    cloud = WordCloud(mask=twitter_mask).generate(text)    
+    fig = plt.figure(frameon=False)
+    ax = plt.Axes(fig, [0., 0., 1., 1.])
+    ax.set_axis_off()
+    fig.add_axes(ax)
+    ax.imshow(cloud)
+    fig.savefig('get_rating/static/get_rating/images/cloud.png',aspect='normal')
     return
