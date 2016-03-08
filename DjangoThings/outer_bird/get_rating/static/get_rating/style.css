@@ -1,9 +1,21 @@
 html {
 	background-color: #d0e4fe;
-	font-family = Arial, Helvetica, sans-serif;
+}
+h1 {
+    font-family = Arial;
+}
+h2 {
+    font-family = Arial;
+}
+h3 {
+    font-family = Arial;
+}
+p {
+    font-family = Arial;
 }
 body {
 	background-image: url("images/pink-little-bird.png");
+    background-size: 75px 75px;
     background-repeat: no-repeat;
-    background-position: right center;     
+    background-position: right top;     
 }
