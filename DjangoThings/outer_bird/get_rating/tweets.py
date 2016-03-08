@@ -76,9 +76,9 @@ class Query(object):
         r = requests.get(url)
         read = r.text
         info_dict = json.loads(read)
-        self.tomato_rating = int(info_dict['tomatoMeter']) / 100
-        self.tomato_audiance_score = int(info_dict['tomatoUserMeter']) / 100
-        self.imdb_rating = float(info_dict['imdbRating']) / 10
+        self.tomato_rating = int(info_dict['tomatoMeter'])
+        self.tomato_audiance_score = int(info_dict['tomatoUserMeter']) 
+        self.imdb_rating = float(info_dict['imdbRating']) * 10
         return
 
     def find_book_rating(self):
@@ -88,14 +88,14 @@ class Query(object):
         read = r.text
         soup = bs4.BeautifulSoup(read, 'html5lib')
         rating = soup.body.work.average_rating.contents[0]
-        self.goodreads_rating = float(rating) / 5
+        self.goodreads_rating = float(rating) * 20
         return
 
     def find_music_rating(self):
         artist = self.term.split(',')[0].strip()
         album = self.term.split(',')[1].strip()
         p = pitchfork.search(album, artist)
-        self.pitchfork_rating = p / 10
+        self.pitchfork_rating = p * 10
         return 
 
 def stream_tweets(num_tweets, update_db = [], query = None):
