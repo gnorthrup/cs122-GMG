@@ -16,14 +16,14 @@ def create_hist(query, category = None):
     plt.grid(True)
     plt.axvline(query.avg_rate, color = 'g', label = 'Average Rating', linestyle = 'dashed', linewidth=2)
     plt.gcf().subplots_adjust(right=0.75)
-    if category == 'movie':
-        query.find_movie_rating()
+    if category == 'Movie':
+        query.find_movie_ratingss()
         plt.axvline(query.tomato_rating, color = 'r', label = 'Rotten Tomato Rating', linestyle='dashed', linewidth=2)
         plt.axvline(query.tomato_audiance_score, color= 'b', label = 'Rotten Tomato Audiance Score', linestyle='dashed', linewidth=2)
-    if category == 'book':
+    if category == 'Book':
         query.find_book_rating()
         plt.axvline(query.good_reads_rating, color = 'r', label = 'GoodReads Rating', linestyle='dashed', linewidth=2)
-    if category == 'album':
+    if category == 'Artist, Album':
         query.find_music_rating()
         plt.axvline(query.pitchfork_rating, color = 'r', label = 'Pitchfork Rating', linestyle = 'dashed', linewidth=2)
     plt.legend(bbox_to_anchor=(1., 1),loc=2, borderaxespad=0, fontsize='small')

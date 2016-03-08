@@ -163,6 +163,6 @@ def collect_tweets(query, total_tweets):
         try:
             max_id = search_tweets(query, 100, max_id = max_id)
         except:
-            query.try_agin = True
+            query.try_again = True
             break
     return 
