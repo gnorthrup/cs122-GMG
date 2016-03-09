@@ -9,7 +9,7 @@ def thething(string, category):
 		get_rating.tweets.collect_tweets(query,600)
 		if query.try_again:
 			return ('Not enough tweets! Please try again.', '', '', '')
-		get_rating.sentiment.nltk_vader(query)
+		get_rating.sentiment.nltk_vader(query, category)
 		try:
 			plt = get_rating.plots.create_hist(query,category)
 		except:

@@ -5,6 +5,7 @@ import csv
 import random
 import nltk.sentiment.vader as vd
 import nltk
+import pickle
 from nltk.corpus import movie_reviews
 
 lexicon_filename = 'effectwordnet/EffectWordNet.csv'
@@ -72,6 +73,7 @@ def prob_from_bayes(classifier):
     term_probs =  {}
     prob_dict = classifier._feature_probdist
     cpdist = classifier._feature_probdist
+    valence = {'neg': -1, 'pos': +1}
 
     for (fname, fval) in classifier.most_informative_features(200):
         def labelprob(l):
@@ -88,12 +90,20 @@ def prob_from_bayes(classifier):
         else:
             ratio = '%8.1f' % (cpdist[l1, fname].prob(fval) /
                     cpdist[l0, fname].prob(fval))
-        term_probs[fname] = (l0, ratio)
+        key = fname[fname.find("(")+1:fname.find(")")]
+        term_probs[key] = valence[l0] * float(ratio)
 
     return term_probs
 
+def create_bayesian_dict(filename='movie_terms.p'):
+    with open(filename,"wb") as f:
+        pickle.dump(prob_from_bayes(train_naive_bayes()), f)
 
-def nltk_vader(query):
+
+def nltk_vader(query, category = None):
+    if category == 'movie':
+        with open('get_rating/movie_terms.p', "rb") as f:
+            movie_terms = pickle.load(f)
     sid = vd.SentimentIntensityAnalyzer()
     avg_rating = 0
     num_valenced = 0
@@ -104,6 +114,10 @@ def nltk_vader(query):
     for tweet in query.tweets:
         scores = sid.polarity_scores(tweet.text)
         tweet.rate = scores['compound']
+        if category == 'movie':
+            for word in tweet.text.lower().split():
+                if word in movie_terms:
+                    tweet.rate += movie_terms[word]
         tweet.norm_rate = (((tweet.rate * 50 + 50) - X_min) / (X_max - X_min)) * 100
         if tweet.rate > best_score:
             best = tweet

@@ -16,6 +16,7 @@ def create_hist(query, category = None):
         return 
     plt.hist(rates,bins=20)
     plt.xlabel('Ratings')
+    plt.xlim(-20,120)
     plt.title('Distribution of {} Sentiments'.format(query.term))
     plt.grid(True)
     plt.axvline(query.avg_rate, color = 'g', label = 'Average Rating', linestyle = 'dashed', linewidth=2)
