@@ -74,8 +74,8 @@ class Query(object):
         title = 't={}'.format('+'.join(title_words))
         url += title + parameters
         r = requests.get(url)
-        if r.status_code == 200:
-            return
+        #if r.status_code == 200:
+        #    return
         read = r.text
         info_dict = json.loads(read)
         try:

@@ -24,7 +24,7 @@ def create_hist(query, category = None):
     if category == 'movie':
         query.find_movie_rating()
         if query.tomato_rating != None: 
-            plt.axvline(query.tomato_rating, color = 'r', label = 'Rotten Tomato Rating', linestyle=' ashed', linewidth=2)
+            plt.axvline(query.tomato_rating, color = 'r', label = 'Rotten Tomato Rating', linestyle='dashed', linewidth=2)
         if query.tomato_audiance_score != None:
             plt.axvline(query.tomato_audiance_score, color= 'b', label = 'Rotten Tomato Audiance Score', linestyle='dashed', linewidth=2)
     if category == 'book':
