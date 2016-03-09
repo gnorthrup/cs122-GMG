@@ -11,6 +11,9 @@ def create_hist(query, category = None):
     must be called. 
     '''
     rates = [t.norm_rate for t in query.tweets if t.norm_rate != 50]
+    if len(rates) == 0:
+        query.try_again = True
+        return 
     plt.hist(rates,bins=20)
     plt.xlabel('Ratings')
     plt.title('Distribution of {} Sentiments'.format(query.term))
@@ -19,14 +22,18 @@ def create_hist(query, category = None):
     plt.gcf().subplots_adjust(right=0.75)
     if category == 'movie':
         query.find_movie_rating()
-        plt.axvline(query.tomato_rating, color = 'r', label = 'Rotten Tomato Rating', linestyle='dashed', linewidth=2)
-        plt.axvline(query.tomato_audiance_score, color= 'b', label = 'Rotten Tomato Audiance Score', linestyle='dashed', linewidth=2)
+        if query.tomato_rating != None: 
+            plt.axvline(query.tomato_rating, color = 'r', label = 'Rotten Tomato Rating', linestyle=' ashed', linewidth=2)
+        if query.tomato_audiance_score != None:
+            plt.axvline(query.tomato_audiance_score, color= 'b', label = 'Rotten Tomato Audiance Score', linestyle='dashed', linewidth=2)
     if category == 'book':
         query.find_book_rating()
-        plt.axvline(query.goodreads_rating, color = 'r', label = 'GoodReads Rating', linestyle='dashed', linewidth=2)
+        if query.goodreads_rating != None:
+            plt.axvline(query.goodreads_rating, color = 'r', label = 'GoodReads Rating', linestyle='dashed', linewidth=2)
     if category == 'album':
         query.find_music_rating()
-        plt.axvline(query.pitchfork_rating, color = 'r', label = 'Pitchfork Rating', linestyle = 'dashed', linewidth=2)
+        if query.pitchfork_rating != None:
+            plt.axvline(query.pitchfork_rating, color = 'r', label = 'Pitchfork Rating', linestyle = 'dashed', linewidth=2)
     plt.legend(bbox_to_anchor=(1., 1),loc=2, borderaxespad=0, fontsize='small')
     plt.savefig('get_rating/static/get_rating/images/hist.png')
     plt.close()
