@@ -106,7 +106,7 @@ def prob_from_bayes(classifier):
 
     return term_probs
 
-def create_bayesian_dict(filename='movie_terms.p'):
+def create_bayesian_dict(filename='get_rating/movie_terms.p'):
     with open(filename,"wb") as f:
         pickle.dump(prob_from_bayes(train_naive_bayes()), f)
 
