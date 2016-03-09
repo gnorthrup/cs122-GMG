@@ -73,19 +73,21 @@ class Query(object):
         title_words = self.term.split()
         title = 't={}'.format('+'.join(title_words))
         url += title + parameters
-
         r = requests.get(url)
+        if r.status_code == 200:
+            return
         read = r.text
         info_dict = json.loads(read)
         self.tomato_rating = int(info_dict['tomatoMeter'])
         self.tomato_audiance_score = int(info_dict['tomatoUserMeter']) 
-        self.imdb_rating = float(info_dict['imdbRating']) * 10
         return
 
     def find_book_rating(self):
         key = GOOD_READS_KEY 
         url = 'https://www.goodreads.com/search.xml?key={}&q={}'.format(key, self.term)
         r = requests.get(url)
+        if r.status_code == 200:
+            return
         read = r.text
         soup = bs4.BeautifulSoup(read, 'html5lib')
         rating = soup.body.work.average_rating.contents[0]
@@ -93,9 +95,14 @@ class Query(object):
         return
 
     def find_music_rating(self):
+        if ',' not in self.term:
+            return
         artist = self.term.split(',')[0].strip()
         album = self.term.split(',')[1].strip()
-        p = pitchfork.search(album, artist)
+        try:
+            p = pitchfork.search(album, artist)
+        except:
+            return
         self.pitchfork_rating = p.score() * 10
         return 
 
