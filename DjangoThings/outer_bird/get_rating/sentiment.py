@@ -7,6 +7,7 @@ import nltk.sentiment.vader as vd
 import nltk
 import pickle
 from nltk.corpus import movie_reviews
+import numpy as np
 
 lexicon_filename = 'effectwordnet/EffectWordNet.csv'
 pos_corpus = 'tagged_reviews/pos'
@@ -92,6 +93,16 @@ def prob_from_bayes(classifier):
                     cpdist[l0, fname].prob(fval))
         key = fname[fname.find("(")+1:fname.find(")")]
         term_probs[key] = valence[l0] * float(ratio)
+
+
+    prob_array = np.array(term_probs.values())
+    p_min = prob_array.min()
+    p_max = prob_array.max()
+    for key, val in term_probs.items():
+        if val <= 0:
+            term_probs[key] = -(((val - p_min) / (0 - p_min)) * (.5) - .5)
+        else:
+            term_probs[key] = -(((val - 0) / (p_max - 0)) * (.5) - 0)
 
     return term_probs
 
