@@ -78,19 +78,23 @@ class Query(object):
             return
         read = r.text
         info_dict = json.loads(read)
-        self.tomato_rating = int(info_dict['tomatoMeter'])
-        self.tomato_audiance_score = int(info_dict['tomatoUserMeter']) 
+        try:
+            self.tomato_rating = int(info_dict['tomatoMeter'])
+            self.tomato_audiance_score = int(info_dict['tomatoUserMeter']) 
+        except:
+            return
         return
 
     def find_book_rating(self):
         key = GOOD_READS_KEY 
         url = 'https://www.goodreads.com/search.xml?key={}&q={}'.format(key, self.term)
         r = requests.get(url)
-        if r.status_code == 200:
-            return
         read = r.text
         soup = bs4.BeautifulSoup(read, 'html5lib')
-        rating = soup.body.work.average_rating.contents[0]
+        try:
+            rating = soup.body.work.average_rating.contents[0]
+        except:
+            return
         self.goodreads_rating = float(rating) * 20
         return
 
