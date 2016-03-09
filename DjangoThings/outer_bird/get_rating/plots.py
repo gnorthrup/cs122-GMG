@@ -23,7 +23,7 @@ def create_hist(query, category = None):
         plt.axvline(query.tomato_audiance_score, color= 'b', label = 'Rotten Tomato Audiance Score', linestyle='dashed', linewidth=2)
     if category == 'book':
         query.find_book_rating()
-        plt.axvline(query.good_reads_rating, color = 'r', label = 'GoodReads Rating', linestyle='dashed', linewidth=2)
+        plt.axvline(query.goodreads_rating, color = 'r', label = 'GoodReads Rating', linestyle='dashed', linewidth=2)
     if category == 'album':
         query.find_music_rating()
         plt.axvline(query.pitchfork_rating, color = 'r', label = 'Pitchfork Rating', linestyle = 'dashed', linewidth=2)

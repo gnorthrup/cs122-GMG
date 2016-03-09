@@ -8,6 +8,7 @@ import twitter
 import requests
 import json
 import bs4
+import pitchfork 
 from get_rating.tweets_db import update_tweets_table
 
 ACCESS_TOKEN = '4870966822-1zGNGFWElLkgginMDYWJUGo4UKgsxOJcsMUScFS'
