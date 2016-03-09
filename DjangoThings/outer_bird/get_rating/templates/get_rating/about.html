@@ -6,5 +6,5 @@
 <p> Little Bird is a tool that finds how twitter users feel about particular topics. It all starts with the query given by the user. Little Bird then gets a random selection of recent tweets that contain the query. After it has the tweets, Little Bird runs a sentiment analysis program on each tweet to get a rating. These ratings are then aggregated into a single number that is then returned to the user. </p>
 <br>
 <h3> How Does Little Bird Know How A Tweet "Feels"? </h3>
-<p>Little Bird uses a lexicon valence system from the Natural Language Toolkit, it also incoporates bayesian lexicons for specific categories of query (movie, music, etc.). Little Bird looks at the pieces of a tweet, and for each piece it has a value (from -1 to 1) associated with how negative or postive that piece is. All of the values for each piece are then summed to get the rating for the tweet.</p>
+<p>Little Bird uses a lexicon valence system from the Natural Language Toolkit, it also incoporates a bayesian lexicon for queries about movies. Little Bird looks at the pieces of a tweet, and for each piece it has a value (from -1 to 1) associated with how negative or postive that piece is. All of the values for each piece are then summed to get the rating for the tweet.</p>
 {% endblock %}
