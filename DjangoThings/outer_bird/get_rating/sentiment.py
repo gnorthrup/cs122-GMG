@@ -68,6 +68,30 @@ def document_features(document):
         features['contains({})'.format(word)] = (word in document_words)
     return features
 
+def prob_from_bayes(classifier):
+    term_probs =  {}
+    prob_dict = classifier._feature_probdist
+    cpdist = classifier._feature_probdist
+
+    for (fname, fval) in classifier.most_informative_features(200):
+        def labelprob(l):
+            return cpdist[l, fname].prob(fval)
+
+        labels = sorted([l for l in classifier._labels
+            if fval in cpdist[l, fname].samples()], key=labelprob)
+        if len(labels) == 1:
+            continue
+        l0 = labels[0]
+        l1 = labels[-1]
+        if cpdist[l0, fname].prob(fval) == 0:
+            ratio = 'INF'
+        else:
+            ratio = '%8.1f' % (cpdist[l1, fname].prob(fval) /
+                    cpdist[l0, fname].prob(fval))
+        term_probs[fname] = (l0, ratio)
+
+    return term_probs
+
 
 def nltk_vader(query):
     sid = vd.SentimentIntensityAnalyzer()
@@ -98,4 +122,3 @@ def nltk_vader(query):
         query.avg_rate = X_std * 100
         query.best = best
         query.worst = worst
-
