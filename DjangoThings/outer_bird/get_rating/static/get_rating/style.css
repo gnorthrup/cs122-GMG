@@ -1,21 +1,21 @@
 html {
-	background-color: #d0e4fe;
+	background: url("images/background.jpg") no-repeat center center fixed;
+	-webkit-background-size: cover;
+	-moz-background-size: cover;
+	-o-background-size: cover;
+	background-size: cover;
 }
 h1 {
-    font-family = Arial;
+    font-family = "Futura";
 }
 h2 {
-    font-family = Arial;
+    font-family = "Futura";
 }
 h3 {
-    font-family = Arial;
+    font-family = "Futura";
 }
 p {
-    font-family = Arial;
+    font-family = "Futura";
 }
-body {
-	background-image: url("images/pink-little-bird.png");
-    background-size: 75px 75px;
-    background-repeat: no-repeat;
-    background-position: right top;     
-}
+
+
