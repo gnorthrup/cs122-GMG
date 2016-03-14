@@ -5,7 +5,7 @@ import csv
 import random
 import nltk.sentiment.vader as vd
 import nltk
-import pickle
+import json
 from nltk.corpus import movie_reviews
 import numpy as np
 
@@ -106,15 +106,15 @@ def prob_from_bayes(classifier):
 
     return term_probs
 
-def create_bayesian_dict(filename='get_rating/movie_terms.p'):
+def create_bayesian_dict(filename='get_rating/movie_terms.json'):
     with open(filename,"wb") as f:
-        pickle.dump(prob_from_bayes(train_naive_bayes()), f)
+        json.dump(prob_from_bayes(train_naive_bayes()), f)
 
 
 def nltk_vader(query, category = None, top = None, bottom = None):
     if category == 'movie':
-        with open('get_rating/movie_terms.p', "rb") as f:
-            movie_terms = pickle.load(f)
+        with open('get_rating/movie_terms.json') as f:
+            movie_terms = json.load(f)
     sid = vd.SentimentIntensityAnalyzer()
     avg_rating = 0
     num_valenced = 0
