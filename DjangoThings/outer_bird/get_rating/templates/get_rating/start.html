@@ -4,7 +4,7 @@
 <title>Little Bird: The Ask Anything Engine</title>
 
 <form method="GET">
-	<center>
+		<center>
 		What do you want to know about? <input type="text" name="query"<br>
         <select name="category">
             <option value="none">None of these</option>
@@ -16,7 +16,7 @@
 	</center>
 </form>
 {% if return %}
-<p> <center> {{query}} has a rating of <b> {{ return }}% </b> according to Little Bird </center> </p>
+<h1> <center> {{query}} has a rating of <b> {{ return }}% </b> according to Little Bird </center> </h1>
 {% endif %}
 
 {% if best %}
