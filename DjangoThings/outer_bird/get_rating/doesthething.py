@@ -3,7 +3,7 @@ import get_rating.sentiment
 import get_rating.plots
 import numpy as np
 
-def thething(string, category):
+def thething(string, category, top, bottom):
 	if len(string) != 0:
 		query = get_rating.tweets.Query(string)
 		get_rating.tweets.collect_tweets(query,600)

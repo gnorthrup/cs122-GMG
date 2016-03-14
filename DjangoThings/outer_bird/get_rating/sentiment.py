@@ -111,7 +111,7 @@ def create_bayesian_dict(filename='get_rating/movie_terms.p'):
         pickle.dump(prob_from_bayes(train_naive_bayes()), f)
 
 
-def nltk_vader(query, category = None):
+def nltk_vader(query, category = None, top = None, bottom = None):
     if category == 'movie':
         with open('get_rating/movie_terms.p', "rb") as f:
             movie_terms = pickle.load(f)
