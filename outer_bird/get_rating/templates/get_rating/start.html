@@ -46,10 +46,12 @@
 {% for tweet in top_tweets|safeseq %}
     {{tweet}} <br> <br>
 {% endfor %}
+</p>
 {% endif %}
 
 {% if bottom_tweets %}
 <h1> Most Negative Tweets: </h1>
+<p>
 {% for tweet in bottom_tweets|safeseq %}
     {{tweet}} <br> <br>
 {% endfor %}
