@@ -40,11 +40,19 @@
 {% endif %}
 
 {% for tweet in top_tweets|safeseq %}
+<<<<<<< HEAD
     {{tweet.text}}
 {% endfor %}
 
 {% for tweet in bottom_tweets|safeseq %}
     {{tweet.text}}
+=======
+    {{tweet}}
+{% endfor %}
+
+{% for tweet in bottom_tweets|safeseq %}
+    {{tweet}}
+>>>>>>> e403aa661adf051a06a81978efc6cc2b6e1d5e11
 {% endfor %}
 
 {% endblock %}
