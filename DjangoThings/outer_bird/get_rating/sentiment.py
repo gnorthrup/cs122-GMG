@@ -146,6 +146,7 @@ def nltk_vader(query, category=None, top=None, bottom=None):
     Assigns to query object avg rating and a normalized and unnormalized rating
     to each tweet object
     '''
+    #
     if category == 'movie':
         with open('get_rating/movie_terms.json') as f:
             movie_terms = json.load(f)
@@ -177,10 +178,10 @@ def nltk_vader(query, category=None, top=None, bottom=None):
     if top or bottom:
         tweets_sorted = sorted(query.tweets, key=lambda x: x.norm_rate)
         if top:
-            for t in tweets_sorted[:10]:
+            for t in tweets_sorted[-10:]:
                 query.top_tweets.append((t.text,t.norm_rate))
         if bottom:
-            for t in tweets_sorted[-10:]:
+            for t in tweets_sorted[:10]:
                 query.bottom_tweets.append((t.text,t.norm_rate))
 
     if num_valenced == 0:
