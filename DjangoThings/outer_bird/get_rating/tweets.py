@@ -4,8 +4,7 @@ import requests
 import json
 import bs4
 import pitchfork
-from get_rating.tweets_db import update_tweets_table
-
+import get_rating.tweets_db 
 ACCESS_TOKEN = '4870966822-1zGNGFWElLkgginMDYWJUGo4UKgsxOJcsMUScFS'
 ACCESS_SECRET = 'DH9WLbu1WGu3i2GgyTRC4Y3hgyJCbGUo9a1UAGGvedIqp'
 CONSUMER_KEY = 'Kn5n5ZQjYcRgAyQ57iBH6AZrT'
@@ -179,7 +178,7 @@ def stream_tweets(num_tweets, update_db = [], query = None):
         text = tweet.get('text', '')
         date = tweet.get('created_at', '')
         if update_db != []:
-            update_tweets_table(update_db[0], update_db[1], update_db[2], text.replace('"', "'"), date)
+            get_rating.tweets_db.update_tweets_table(update_db[0], update_db[1], update_db[2], text.replace('"', "'"), date)
         if query != None:
             query.add_tweet(Tweet(text, date))
     return
@@ -210,10 +209,15 @@ def search_tweets(query, num_tweets, max_id = None, update_db = []):
         The maximum id for subsequent API connections in order for connections to
         collect distinct tweets
     '''
-    auth = tweepy.AppAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
+    auth = tweepy.AppAuthHandler(CONSUMER_KEY, CONSUMER_SECRET) 
     api = tweepy.API(auth)
 
     tweets = api.search(q=query.term, lang = 'en', max_id = max_id, count = num_tweets)
+    # If there are no tweets for a particular query, query.try_again will be set to
+    # true and the user will be prompted to try entering the search query again.
+    if tweets == []:
+        query.try_again = True
+        return 
     min_id = float('inf')
     for status in tweets:
         tweet = Tweet(status.text, status.created_at, status.id)
@@ -221,7 +225,7 @@ def search_tweets(query, num_tweets, max_id = None, update_db = []):
         if tweet.id < float('inf'):
             min_id = tweet.id
         if update_db != []:
-            update_tweets_table(update_db[0], update_db[1], update_db[2], tweet.text.replace('"', "'"), tweet.created_at)
+            get_rating.tweets_db.update_tweets_table(update_db[0], update_db[1], update_db[2], tweet.text.replace('"', "'"), tweet.created_at)
     # min_id - 1 will be thee maximum tweet ID for subsequent API connections.
     return min_id - 1
 
@@ -242,6 +246,8 @@ def collect_tweets(query, total_tweets):
     for i in range(n):
         try:
             max_id = search_tweets(query, 100, max_id = max_id)
+            if query.try_again:
+                break 
         except:
             query.try_again = True
             break
