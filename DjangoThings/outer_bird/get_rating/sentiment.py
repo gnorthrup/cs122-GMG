@@ -174,6 +174,11 @@ def nltk_vader(query, category=None, top=None, bottom=None):
         avg_rating += tweet.rate
         num_valenced += (tweet.rate != 0)
 
+    if top or bottom:
+        tweets_sorted = sorted(query.tweets, key = lambda x: x.norm_rate)
+        query.top_tweets = tweets_sorted[-10:]
+        query.bottom_tweets = tweets_sorted[:10]
+
     if num_valenced == 0:
         pass
     else:
