@@ -67,11 +67,11 @@ The repository also have several other directories, some necessary for the imple
 
 -outer_bird/little_bird : just a Django wrapper with a url dispatcher that sends all urls to the get_rating app where the rest of the functional code is
 
--outer_bird/get_rating/templates : directory that stores all of the html templates, used by the Django render function to produce the html file returned to the user
+-outer_bird/get_rating/templates (All templates are original): directory that stores all of the html templates, used by the Django render function to produce the html file returned to the user
 
 -outer_bird/get_rating/static : stores the images called and the css file 
 
--Other_Stuff : This directory stores all of the files not in the final implementation, also original copies of a lot of the code files are stored here ebfore they were copied into outer_bird/get_rating
+-Other_Stuff : This directory stores all of the files not in the final implementation, also original copies of a lot of the code files are stored here before they were copied into outer_bird/get_rating
 
 
 
