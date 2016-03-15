@@ -9,15 +9,13 @@ Installation
 -------------
 git clone https://github.com/gnorthrup/cs122-GMG
 
-In order for the program to run, the following packages need to be installed with sudo pip3 install:
+In order for the program to run, the following packages need to be installed with sudo pip3 install or sudo pip install:
 
 bs4
 csv
 json
 matplotlib.pyplot
-nltk
-? nltk.corpus
-? nltk.sentiment.vader
+nltk (if you would like to generate your own bayesian dict, you will need to install the nltk corpus as well)
 numpy
 pitchfork
 PIL
@@ -36,7 +34,7 @@ To launch the Django server, run:
 
 python3 manage.py runserver --nothreading
 
-from the outer_bird directory. 
+from the outer_bird directory.
 
 Originality Tagging
 -------------------
@@ -67,13 +65,9 @@ The repository also have several other directories, some necessary for the imple
 
 -outer_bird/little_bird : just a Django wrapper with a url dispatcher that sends all urls to the get_rating app where the rest of the functional code is
 
--outer_bird/get_rating/templates (All templates are original): directory that stores all of the html templates, used by the Django render function to produce the html file returned to the user
+-outer_bird/get_rating/templates : directory that stores all of the html templates, used by the Django render function to produce the html file returned to the user
 
 -outer_bird/get_rating/static : stores the images called and the css file 
 
 -Other_Stuff : This directory stores all of the files not in the final implementation, also original copies of a lot of the code files are stored here before they were copied into outer_bird/get_rating
-
-
-
-
 
