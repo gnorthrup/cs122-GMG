@@ -2,6 +2,10 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from get_rating.doesthething import thething
 
+#Modified: views.py is a Django file, but it is
+#blank upon creation. we populated it with the code
+#to produce the html files
+
 def start(request):
 	if request.method == 'GET':
 		string = request.GET.get('query', '')

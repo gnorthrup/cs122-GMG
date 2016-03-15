@@ -3,6 +3,10 @@ import get_rating.sentiment
 import get_rating.plots
 import numpy as np
 
+#Original : This function combines most of the pieces
+#of code into one place that returns all of the 
+#necessary things for the start view
+
 def thething(string, category, top, bottom):
 	if len(string) != 0:
 		query = get_rating.tweets.Query(string)
