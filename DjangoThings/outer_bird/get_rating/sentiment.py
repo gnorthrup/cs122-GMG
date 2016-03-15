@@ -176,10 +176,12 @@ def nltk_vader(query, category=None, top=None, bottom=None):
 
     if top or bottom:
         tweets_sorted = sorted(query.tweets, key=lambda x: x.norm_rate)
-        for t in tweets_sorted[-10:]:
-            query.top_tweets.append((t.text,t.norm_rate))
-        for t in tweets_sorted[:10]:
-            query.bottom_tweets.append((t.text,t.norm_rate))
+        if top:
+            for t in tweets_sorted[:10]:
+                query.top_tweets.append((t.text,t.norm_rate))
+        if bottom:
+            for t in tweets_sorted[-10:]:
+                query.bottom_tweets.append((t.text,t.norm_rate))
 
     if num_valenced == 0:
         pass
