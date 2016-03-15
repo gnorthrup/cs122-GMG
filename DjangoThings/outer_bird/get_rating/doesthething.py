@@ -11,11 +11,12 @@ def thething(string, category, top, bottom):
 			return ('Not enough tweets! Please try again.', '', '', '')
 		get_rating.sentiment.nltk_vader(query, category, top, bottom)
 		try:
-			plt = get_rating.plots.create_hist(query,category)
+			get_rating.plots.create_hist(query,category)
 		except ValueError:
 			print(ValueError)
 			return ('Not enought tweets! Please try again', '', '', '')
 		get_rating.plots.create_cloud(query)
-		return (str(np.round(query.avg_rate,2)),query.best.text,query.worst.text,plt)
+		return (str(np.round(query.avg_rate,2)),query.best.text,query.worst.text,
+				query.top_tweets, query.bottom_tweets)
 	else:
 		return ('','','','')

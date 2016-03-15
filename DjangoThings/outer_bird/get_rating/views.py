@@ -8,8 +8,9 @@ def start(request):
 		category = request.GET.get('category', '')
 		top = request.GET.get('top_10', '')
 		bottom = request.GET.get('bottom_10', '')
-		newstring, best, worst, plt = thething(string, category, top, bottom)
-		c = {'return':newstring, 'best':best, 'worst':worst, 'plot':plt, 'query':string}
+		newstring, best, worst, top_tweets, bottom_tweets = thething(string, category, top, bottom)
+		c = {'return':newstring, 'best':best, 'worst':worst, 'query':string,
+			'top_tweets':top_tweets, 'bottom_tweets':bottom_tweets}
 		return render(request, 'get_rating/start.html', c)
 	else:
 		c = {'name': 'Graham'}
@@ -17,7 +18,7 @@ def start(request):
 
 def about(request):
 	c = {}
-	return render(request, 'get_rating/about.html', c) 
+	return render(request, 'get_rating/about.html', c)
 
 def ack(request):
 	c = {}
