@@ -63,9 +63,9 @@ Other Directories
 -----------------
 The repository also have several other directories, some necessary for the implementation, others just to store things not in the final implementation
 
--outer_bird/little_bird : just a Django wrapper with a url dispatcher that sends all urls to the get_rating app where the rest of the functional code is
+-outer_bird/little_bird (This is largely Django generated, the only user written code is in the url dispatcher where we direct it to get_rating, where most of the work is): just a Django wrapper with a url dispatcher that sends all urls to the get_rating app where the rest of the functional code is
 
--outer_bird/get_rating/templates : directory that stores all of the html templates, used by the Django render function to produce the html file returned to the user
+-outer_bird/get_rating/templates (All original files): directory that stores all of the html templates, used by the Django render function to produce the html file returned to the user
 
 -outer_bird/get_rating/static : stores the images called and the css file 
 
