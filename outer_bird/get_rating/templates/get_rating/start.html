@@ -5,7 +5,7 @@
 
 <form method="GET">
 		<center>
-		What do you want to know about? <input type="text" name="query"<br>
+		What do you want to know about? <input type="text" name="query" <br>
         <select name="category">
             <option value="none">None of these</option>
             <option value="movie">Movie</option>
@@ -40,14 +40,22 @@
 </center>
 {% endif %}
 
+{% if top_tweets %}
+<h1> Most Positive Tweets: </h1>
 <p>
 {% for tweet in top_tweets|safeseq %}
     {{tweet}} <br> <br>
 {% endfor %}
+</p>
+{% endif %}
 
+{% if bottom_tweets %}
+<h1> Most Negative Tweets: </h1>
+<p>
 {% for tweet in bottom_tweets|safeseq %}
     {{tweet}} <br> <br>
 {% endfor %}
 </p>
+{% endif %}
 
 {% endblock %}
