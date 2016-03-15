@@ -4,7 +4,6 @@ import nltk
 import csv
 import random
 import nltk.sentiment.vader as vd
-import nltk
 import json
 from nltk.corpus import movie_reviews
 import numpy as np
@@ -13,12 +12,16 @@ lexicon_filename = 'effectwordnet/EffectWordNet.csv'
 pos_corpus = 'tagged_reviews/pos'
 neg_corpus = 'tagged_reviews/neg'
 
+
 def lexicon_analysis(query, lexicon_filename):
     '''
     Use EffectWordNet lexicon to classify value of tweet
     Inputs:
         tweets: tweets
         lexicon_filename
+    NOTE:
+        Alternate sentiment analysis method not used by final implementation
+        Generates more polar ratings than vader, but can't be used with histogram
     '''
     effect_conversion = {"+Effect": 1, "-Effect": -1, "Null": 0}
     with open(lexicon_filename) as f:
@@ -50,6 +53,13 @@ def lexicon_analysis(query, lexicon_filename):
 
 
 def train_naive_bayes():
+    '''
+    Trains a naive bayes classifier using the nltk movie reviews corpus to
+    movie relevant text as positive or negative
+
+    NOTE:
+        Easily generalizable to different domain given similarly structued corpus
+    '''
     documents = [(list(movie_reviews.words(fileid)), category)
                  for category in movie_reviews.categories() for fileid in movie_reviews.fileids(category)]
     random.shuffle(documents)
@@ -64,14 +74,27 @@ def train_naive_bayes():
 
 
 def document_features(document):
+    '''
+    Extracts features from text to either train or test Naive Bayes classifier
+    '''
     document_words = set(document)
     features = {}
     for word in word_features:
         features['contains({})'.format(word)] = (word in document_words)
     return features
 
+
 def prob_from_bayes(classifier):
-    term_probs =  {}
+    '''
+    Extracts most informative features from Naive Bayes classifier and returns
+    as a dictionary of normalized*(.5) probabilites of label given feature
+    to be used to augment core vader sentiment analysis
+    Inputs:
+        classifier: NaiveBayesClassifier object given by train_naive_bayes
+    Returns:
+        term_probs: dict of normed * 0.5 probabilites for 200 most informative features
+    '''
+    term_probs = {}
     prob_dict = classifier._feature_probdist
     cpdist = classifier._feature_probdist
     valence = {'neg': -1, 'pos': +1}
@@ -81,7 +104,7 @@ def prob_from_bayes(classifier):
             return cpdist[l, fname].prob(fval)
 
         labels = sorted([l for l in classifier._labels
-            if fval in cpdist[l, fname].samples()], key=labelprob)
+                         if fval in cpdist[l, fname].samples()], key=labelprob)
         if len(labels) == 1:
             continue
         l0 = labels[0]
@@ -90,10 +113,9 @@ def prob_from_bayes(classifier):
             ratio = 'INF'
         else:
             ratio = '%8.1f' % (cpdist[l1, fname].prob(fval) /
-                    cpdist[l0, fname].prob(fval))
-        key = fname[fname.find("(")+1:fname.find(")")]
+                               cpdist[l0, fname].prob(fval))
+        key = fname[fname.find("(") + 1:fname.find(")")]
         term_probs[key] = valence[l0] * float(ratio)
-
 
     prob_array = np.array(term_probs.values())
     p_min = prob_array.min()
@@ -106,12 +128,24 @@ def prob_from_bayes(classifier):
 
     return term_probs
 
+
 def create_bayesian_dict(filename='get_rating/movie_terms.json'):
-    with open(filename,"wb") as f:
+    '''
+    Creates json file of dictionary from prob_from_bayes, so creation process
+    does not need to be repeated for each call
+    '''
+    with open(filename, "wb") as f:
         json.dump(prob_from_bayes(train_naive_bayes()), f)
 
 
-def nltk_vader(query, category = None, top = None, bottom = None):
+def nltk_vader(query, category=None, top=None, bottom=None):
+    '''
+    Core sentiment analysis. Given query object uses NLTK Vader
+    SentimentIntensityAnalyzer to define sentiment for each tweet. If domain is
+    given, incorporates supplemental information from Naive Bayes Classifier.
+    Assigns to query object avg rating and a normalized and unnormalized rating
+    to each tweet object
+    '''
     if category == 'movie':
         with open('get_rating/movie_terms.json') as f:
             movie_terms = json.load(f)
@@ -129,7 +163,8 @@ def nltk_vader(query, category = None, top = None, bottom = None):
             for word in tweet.text.lower().split():
                 if word in movie_terms:
                     tweet.rate += movie_terms[word]
-        tweet.norm_rate = (((tweet.rate * 50 + 50) - X_min) / (X_max - X_min)) * 100
+        tweet.norm_rate = (
+            ((tweet.rate * 50 + 50) - X_min) / (X_max - X_min)) * 100
         if tweet.rate > best_score:
             best = tweet
             best_score = tweet.rate
