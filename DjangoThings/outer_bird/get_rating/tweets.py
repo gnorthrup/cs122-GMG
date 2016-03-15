@@ -3,7 +3,7 @@ import twitter
 import requests
 import json
 import bs4
-import pitchfork 
+import pitchfork
 from get_rating.tweets_db import update_tweets_table
 
 ACCESS_TOKEN = '4870966822-1zGNGFWElLkgginMDYWJUGo4UKgsxOJcsMUScFS'
@@ -24,17 +24,17 @@ class Tweet(object):
         self.rate = None
         self.norm_rate = None
 
-    def __eq__(self, other): 
+    def __eq__(self, other):
         return self.id == other.id
 
-    # This hash function allows tweets to be stored in a 
-    # set in the Query class. 
+    # This hash function allows tweets to be stored in a
+    # set in the Query class.
     def __hash__(self):
         return 0
 
 # This class will contain information about a specific search
-# somebody does. The term attribute will be the query of 
-# interest and the tweets attribute will be a set of 
+# somebody does. The term attribute will be the query of
+# interest and the tweets attribute will be a set of
 # Tweet objects with content related to the term.
 class Query(object):
     def __init__(self, term):
@@ -43,7 +43,7 @@ class Query(object):
         # The num_tweets attribute was used to referece
         # the number of tweets that were added and the number
         # of tweets in a set to make sure that the unique
-        # tweets are aquired with each Twitter API connection. 
+        # tweets are aquired with each Twitter API connection.
         self.num_tweets = 0
 
         self.avg_rate = None
@@ -56,17 +56,21 @@ class Query(object):
         self.goodreads_rating = None
         self.pitchfork_rating = None
 
-        # If something goes wrong with the query with 
+        # If something goes wrong with the query with
         # collecting tweets, this attribute will be set
-        # to True and the user will be prometed to try 
+        # to True and the user will be prometed to try
         # again
         self.try_again = False
+        self.best = None
+        self.worst = None
+        self.top_tweets = []
+        self.bottom_tweets = []
 
     def add_tweet(self, tweet):
         '''
         Adds a Tweet object related to a query
-        to the set of tweets and adds one to the 
-        num_tweet count 
+        to the set of tweets and adds one to the
+        num_tweet count
         '''
         self.tweets.add(tweet)
         self.num_tweets += 1
@@ -74,7 +78,7 @@ class Query(object):
 
     def find_movie_rating(self):
         '''
-        Collects Rotten Tomato critic rating and 
+        Collects Rotten Tomato critic rating and
         Rotten Tomato Audiance Score to compare
         to the sentiment analysis if the query is
         a movie
@@ -93,7 +97,7 @@ class Query(object):
         # not be terminated, but no critic reviews will be displayed.
         try:
             self.tomato_rating = int(info_dict['tomatoMeter'])
-            self.tomato_audiance_score = int(info_dict['tomatoUserMeter']) 
+            self.tomato_audiance_score = int(info_dict['tomatoUserMeter'])
         except:
             return
         return
@@ -104,7 +108,7 @@ class Query(object):
         to the sentiment analysis if the query is
         a book
         '''
-        key = GOOD_READS_KEY 
+        key = GOOD_READS_KEY
         url = 'https://www.goodreads.com/search.xml?key={}&q={}'.format(key, self.term)
         r = requests.get(url)
         read = r.text
@@ -124,7 +128,7 @@ class Query(object):
         '''
         Collects Pitchfork critic ratings to compare
         to the sentiment analysis if the query is
-        an artist and album 
+        an artist and album
         '''
         if ',' not in self.term:
             return
@@ -139,7 +143,7 @@ class Query(object):
         except:
             return
         self.pitchfork_rating = p.score() * 10
-        return 
+        return
 
 def stream_tweets(num_tweets, update_db = [], query = None):
     '''
@@ -156,7 +160,7 @@ def stream_tweets(num_tweets, update_db = [], query = None):
                 name of the table for the tweets to be saved in.
                 *Note that this function has this utility but it was not incorported
                 *into the functionality of the project
-        query: an optional parameter of a Query object. If not specified, the 
+        query: an optional parameter of a Query object. If not specified, the
             default value of None will collect all tweets streaming from Twitter
     '''
     oauth = twitter.OAuth(ACCESS_TOKEN, ACCESS_SECRET, CONSUMER_KEY, CONSUMER_SECRET)
@@ -174,9 +178,9 @@ def stream_tweets(num_tweets, update_db = [], query = None):
         print(count)
         text = tweet.get('text', '')
         date = tweet.get('created_at', '')
-        if update_db != []: 
+        if update_db != []:
             update_tweets_table(update_db[0], update_db[1], update_db[2], text.replace('"', "'"), date)
-        if query != None:    
+        if query != None:
             query.add_tweet(Tweet(text, date))
     return
 
@@ -184,15 +188,15 @@ def search_tweets(query, num_tweets, max_id = None, update_db = []):
     '''
     Uses the twitter search API to collect tweets based on a query object.
 
-    Inputs: 
+    Inputs:
         query: a Query object
         num_tweets: the desired number of tweets to be collected from Twitter.
                     The connection will time out after 60 seconds if the specified
-                    amount is not attained, so num_tweets will not always be attained. 
-                    Note that according the API limits, the maximum num_tweets is 
+                    amount is not attained, so num_tweets will not always be attained.
+                    Note that according the API limits, the maximum num_tweets is
                     100. If a larger number is specified only 100 will be returned.
         max_id: Default value is None. If specified, no tweets with greater IDs
-                    (corresponding to tweets made at a later time) will be collected 
+                    (corresponding to tweets made at a later time) will be collected
         update_db: an optional parameter. If update_db is not equal to
                     [] the function will load the tweets into a database.
                     If specified, must be a list where the first entry is
@@ -203,7 +207,7 @@ def search_tweets(query, num_tweets, max_id = None, update_db = []):
                     *into the functionality of the project
 
     Returns:
-        The maximum id for subsequent API connections in order for connections to 
+        The maximum id for subsequent API connections in order for connections to
         collect distinct tweets
     '''
     auth = tweepy.AppAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
@@ -219,12 +223,12 @@ def search_tweets(query, num_tweets, max_id = None, update_db = []):
         if update_db != []:
             update_tweets_table(update_db[0], update_db[1], update_db[2], tweet.text.replace('"', "'"), tweet.created_at)
     # min_id - 1 will be thee maximum tweet ID for subsequent API connections.
-    return min_id - 1 
+    return min_id - 1
 
 def collect_tweets(query, total_tweets):
     '''
-    This function works around the search API limit of 100 tweets per 
-    connection and allowst the user to collect a larger amount of unique tweets. 
+    This function works around the search API limit of 100 tweets per
+    connection and allowst the user to collect a larger amount of unique tweets.
     Note that there is still an API limit of 180 connections per 15 minutes.
 
     Inputs:
@@ -241,4 +245,4 @@ def collect_tweets(query, total_tweets):
         except:
             query.try_again = True
             break
-    return 
+    return
