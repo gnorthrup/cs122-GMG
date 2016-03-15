@@ -23,6 +23,7 @@ def lexicon_analysis(query, lexicon_filename):
         Alternate sentiment analysis method not used by final implementation
         Generates more polar ratings than vader, but can't be used with histogram
     '''
+    #Original
     effect_conversion = {"+Effect": 1, "-Effect": -1, "Null": 0}
     with open(lexicon_filename) as f:
         lex_reader = csv.reader(f, delimiter='\t')
@@ -60,6 +61,7 @@ def train_naive_bayes():
     NOTE:
         Easily generalizable to different domain given similarly structued corpus
     '''
+    #Modified http://www.nltk.org/book/ch06.html
     documents = [(list(movie_reviews.words(fileid)), category)
                  for category in movie_reviews.categories() for fileid in movie_reviews.fileids(category)]
     random.shuffle(documents)
@@ -77,6 +79,7 @@ def document_features(document):
     '''
     Extracts features from text to either train or test Naive Bayes classifier
     '''
+    #Modified http://www.nltk.org/book/ch06.html
     document_words = set(document)
     features = {}
     for word in word_features:
@@ -94,6 +97,7 @@ def prob_from_bayes(classifier):
     Returns:
         term_probs: dict of normed * 0.5 probabilites for 200 most informative features
     '''
+    # Heavily Modified from show_most_informative_features method of nltk classifier object
     term_probs = {}
     prob_dict = classifier._feature_probdist
     cpdist = classifier._feature_probdist
@@ -146,7 +150,7 @@ def nltk_vader(query, category=None, top=None, bottom=None):
     Assigns to query object avg rating and a normalized and unnormalized rating
     to each tweet object
     '''
-    #
+    #Original code
     if category == 'movie':
         with open('get_rating/movie_terms.json') as f:
             movie_terms = json.load(f)
