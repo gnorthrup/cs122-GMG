@@ -39,4 +39,12 @@
 </center>
 {% endif %}
 
+{% for tweet in top_tweets|safeseq %}
+    {{tweet}}
+{% endfor}
+
+{% for tweet in bottom_tweets|safeseq %}
+    {{tweet}}
+{% endfor}
+
 {% endblock %}
