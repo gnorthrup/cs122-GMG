@@ -28,7 +28,7 @@ sqlite3
 tweepy
 twitter
 wordcloud
-? anything for Django?
+django
 
 Usage
 -----
@@ -36,11 +36,11 @@ To launch the Django server, run:
 
 python3 manage.py runserver --nothreading
 
-from the DjangoThings/outer_bird directory. 
+from the outer_bird directory. 
 
 The Code
 --------
-The content of the code to run Little Bird is located in the DjangoThings/outer_bird/get_rating directory.
+The content of the code to run Little Bird is located in the outer_bird/get_rating directory.
 
 -urls.py : the url dispatcher for the app, works in tandem with views.py to deliver html files
 -views.py : processes the url request and renders the appropriate html template
@@ -54,11 +54,13 @@ Other Directories
 -----------------
 The repository also have several other directories, some necessary for the implementation, others just to store things not in the final implementation
 
--DjangoThings/outer_bird/little_bird : just a Django wrapper with a url dispatcher that sends all urls to the get_rating app where the rest of the functional code is
+-outer_bird/little_bird : just a Django wrapper with a url dispatcher that sends all urls to the get_rating app where the rest of the functional code is
 
--DjangoThings/outer_bird/get_rating/templates : directory that stores all of the html templates, used by the Django render function to produce the html file returned to the user
+-outer_bird/get_rating/templates : directory that stores all of the html templates, used by the Django render function to produce the html file returned to the user
 
--DjangoThings/outer_bird/get_rating/static : stores the images called and the css file 
+-outer_bird/get_rating/static : stores the images called and the css file 
+
+-Other_Stuff : This directory stores all of the files not in the final implementation, also original copies of a lot of the code files are stored here ebfore they were copied into outer_bird/get_rating
 
 
 
