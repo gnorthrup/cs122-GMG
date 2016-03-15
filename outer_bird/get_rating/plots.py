@@ -69,6 +69,7 @@ def create_cloud(query):
 
     twitter_mask = np.array(Image.open('get_rating/static/get_rating/images/mask.jpg'))
     twitter_mask = np.abs(twitter_mask - 1)
+    # wordcloud package from https://pypi.python.org/pypi/wordcloud/ was used to generate the wordcloud 
     cloud = WordCloud(mask=twitter_mask).generate(text)    
     fig = plt.figure(frameon=False)
     ax = plt.Axes(fig, [0., 0., 1., 1.])

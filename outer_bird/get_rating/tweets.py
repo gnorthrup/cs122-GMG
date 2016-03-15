@@ -5,6 +5,7 @@ import json
 import bs4
 import pitchfork
 import get_rating.tweets_db 
+
 ACCESS_TOKEN = '4870966822-1zGNGFWElLkgginMDYWJUGo4UKgsxOJcsMUScFS'
 ACCESS_SECRET = 'DH9WLbu1WGu3i2GgyTRC4Y3hgyJCbGUo9a1UAGGvedIqp'
 CONSUMER_KEY = 'Kn5n5ZQjYcRgAyQ57iBH6AZrT'
@@ -82,6 +83,7 @@ class Query(object):
         to the sentiment analysis if the query is
         a movie
         '''
+        #OMDB API used from http://www.omdbapi.com/
         url = 'http://www.omdbapi.com/?'
         parameters = '&tomatoes=true&r=json'
         title_words = self.term.split()
@@ -107,6 +109,7 @@ class Query(object):
         to the sentiment analysis if the query is
         a book
         '''
+        #GoodReads API used from https://www.goodreads.com/api#
         key = GOOD_READS_KEY
         url = 'https://www.goodreads.com/search.xml?key={}&q={}'.format(key, self.term)
         r = requests.get(url)
@@ -133,6 +136,8 @@ class Query(object):
             return
         artist = self.term.split(',')[0].strip()
         album = self.term.split(',')[1].strip()
+
+        #~Pitchfork API package used from https://pypi.python.org/pypi/pitchfork/#
 
         # If the user tried to categorize a query as a book but
         # the query term is not in GoodReads, the program will
@@ -162,6 +167,7 @@ def stream_tweets(num_tweets, update_db = [], query = None):
         query: an optional parameter of a Query object. If not specified, the
             default value of None will collect all tweets streaming from Twitter
     '''
+    #~Modified from http://socialmedia-class.org/twittertutorial.html~#
     oauth = twitter.OAuth(ACCESS_TOKEN, ACCESS_SECRET, CONSUMER_KEY, CONSUMER_SECRET)
 
     twitter_stream = twitter.TwitterStream(auth=oauth)
@@ -174,6 +180,9 @@ def stream_tweets(num_tweets, update_db = [], query = None):
         if count == num_tweets:
             break
         count += 1
+
+    #~Original Code~#
+        # prints the count so that the user can see the progress of the streaming
         print(count)
         text = tweet.get('text', '')
         date = tweet.get('created_at', '')
@@ -209,6 +218,7 @@ def search_tweets(query, num_tweets, max_id = None, update_db = []):
         The maximum id for subsequent API connections in order for connections to
         collect distinct tweets
     '''
+    #~Original Code~ using tweepy library. Documentation at http://tweepy.readthedocs.org/en/v3.5.0/#
     auth = tweepy.AppAuthHandler(CONSUMER_KEY, CONSUMER_SECRET) 
     api = tweepy.API(auth)
 
