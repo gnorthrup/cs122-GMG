@@ -1,8 +1,3 @@
-### Run --sudo pip3 install twitter-- on your VM ###
- 
-# 4. more validation APIs?
-# 6. hist legend  
-
 import tweepy
 import twitter
 import requests
@@ -30,54 +25,72 @@ class Tweet(object):
         self.norm_rate = None
 
     def __eq__(self, other): 
-        #is_equal = isinstance(other, self.__class__) and \
-        #           self.text == other.text and \
-        #           self.date == other.date and \
-        #           self.user == other.user
-        #return is_equal
         return self.id == other.id
 
-    #def __ne__(self, other):
-    #    return not self.__eq__(other)
-
+    # This hash function allows tweets to be stored in a 
+    # set in the Query class. 
     def __hash__(self):
         return 0
 
 # This class will contain information about a specific search
-# somebody does. The term attribute will be the movie title
-# (or something else) of interest and the tweets attribute
-# will be a list of Tweet objects with content related to the
-# term.
+# somebody does. The term attribute will be the query of 
+# interest and the tweets attribute will be a set of 
+# Tweet objects with content related to the term.
 class Query(object):
-    def __init__(self, term, artist = None):
+    def __init__(self, term):
         self.term = term
         self.tweets = set()
+        # The num_tweets attribute was used to referece
+        # the number of tweets that were added and the number
+        # of tweets in a set to make sure that the unique
+        # tweets are aquired with each Twitter API connection. 
         self.num_tweets = 0
-        self.artist = artist
+
         self.avg_rate = None
+
+        # These attributes will be set as conventional
+        # ratings to compare the twitter sentiment analysis
+        # to if the if the query category is appropriate.
         self.tomato_rating = None
         self.tomato_audiance_score = None
-        self.imdb_rating = None
         self.goodreads_rating = None
         self.pitchfork_rating = None
+
+        # If something goes wrong with the query with 
+        # collecting tweets, this attribute will be set
+        # to True and the user will be prometed to try 
+        # again
         self.try_again = False
 
     def add_tweet(self, tweet):
+        '''
+        Adds a Tweet object related to a query
+        to the set of tweets and adds one to the 
+        num_tweet count 
+        '''
         self.tweets.add(tweet)
         self.num_tweets += 1
         return
 
     def find_movie_rating(self):
+        '''
+        Collects Rotten Tomato critic rating and 
+        Rotten Tomato Audiance Score to compare
+        to the sentiment analysis if the query is
+        a movie
+        '''
         url = 'http://www.omdbapi.com/?'
         parameters = '&tomatoes=true&r=json'
         title_words = self.term.split()
         title = 't={}'.format('+'.join(title_words))
         url += title + parameters
         r = requests.get(url)
-        #if r.status_code == 200:
-        #    return
         read = r.text
         info_dict = json.loads(read)
+
+        # If the user tried to categorize a query as a movie but
+        # the query term is not in Rotten Tomatoes, the program will
+        # not be terminated, but no critic reviews will be displayed.
         try:
             self.tomato_rating = int(info_dict['tomatoMeter'])
             self.tomato_audiance_score = int(info_dict['tomatoUserMeter']) 
@@ -86,11 +99,20 @@ class Query(object):
         return
 
     def find_book_rating(self):
+        '''
+        Collects GoodReads critic ratings to compare
+        to the sentiment analysis if the query is
+        a book
+        '''
         key = GOOD_READS_KEY 
         url = 'https://www.goodreads.com/search.xml?key={}&q={}'.format(key, self.term)
         r = requests.get(url)
         read = r.text
         soup = bs4.BeautifulSoup(read, 'html5lib')
+
+        # If the user tried to categorize a query as a book but
+        # the query term is not in GoodReads, the program will
+        # not be terminated, but no critic reviews will be displayed.
         try:
             rating = soup.body.work.average_rating.contents[0]
         except:
@@ -99,10 +121,19 @@ class Query(object):
         return
 
     def find_music_rating(self):
+        '''
+        Collects Pitchfork critic ratings to compare
+        to the sentiment analysis if the query is
+        an artist and album 
+        '''
         if ',' not in self.term:
             return
         artist = self.term.split(',')[0].strip()
         album = self.term.split(',')[1].strip()
+
+        # If the user tried to categorize a query as a book but
+        # the query term is not in GoodReads, the program will
+        # not be terminated, but no critic reviews will be displayed.
         try:
             p = pitchfork.search(album, artist)
         except:
@@ -112,17 +143,21 @@ class Query(object):
 
 def stream_tweets(num_tweets, update_db = [], query = None):
     '''
+    Uses the twitter streaming API to continuously collect tweets
+    based on a query object
+
     Inputs:
-        num_tweets: the number of tweets to stream from twitter
-                    default value is NA, so the number of tweets
-                    collected is not limited
+        num_tweets: streaming will stop after this number of tweets are
+            collected from Twitter
         update_db: an optional parameter. If update_db is not equal to
-                    [] the function will load the tweets into a database.
-                    If specified, must be a list where the first entry is
-                    the name of the database and the second entry is the
-                    name of the table for the tweets to be saved in.
-        query: an optional parameter of a Query object. Default value is
-                None.
+                [] the function will load the tweets into a database.
+                If specified, must be a list where the first entry is
+                the name of the database and the second entry is the
+                name of the table for the tweets to be saved in.
+                *Note that this function has this utility but it was not incorported
+                *into the functionality of the project
+        query: an optional parameter of a Query object. If not specified, the 
+            default value of None will collect all tweets streaming from Twitter
     '''
     oauth = twitter.OAuth(ACCESS_TOKEN, ACCESS_SECRET, CONSUMER_KEY, CONSUMER_SECRET)
 
@@ -147,16 +182,31 @@ def stream_tweets(num_tweets, update_db = [], query = None):
 
 def search_tweets(query, num_tweets, max_id = None, update_db = []):
     '''
-    update_db: an optional parameter. If update_db is not equal to
+    Uses the twitter search API to collect tweets based on a query object.
+
+    Inputs: 
+        query: a Query object
+        num_tweets: the desired number of tweets to be collected from Twitter.
+                    The connection will time out after 60 seconds if the specified
+                    amount is not attained, so num_tweets will not always be attained. 
+                    Note that according the API limits, the maximum num_tweets is 
+                    100. If a larger number is specified only 100 will be returned.
+        max_id: Default value is None. If specified, no tweets with greater IDs
+                    (corresponding to tweets made at a later time) will be collected 
+        update_db: an optional parameter. If update_db is not equal to
                     [] the function will load the tweets into a database.
                     If specified, must be a list where the first entry is
                     the name of the database and the second entry is the
                     name of the table for the tweets to be saved in. The
                     third entry in the list is a list of column names.
+                    *Note that this function has this utility but it was not incorported
+                    *into the functionality of the project
+
+    Returns:
+        The maximum id for subsequent API connections in order for connections to 
+        collect distinct tweets
     '''
     auth = tweepy.AppAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
-    #if we want to add a time limit specify timeout parameter in API
-    #class (in secons). Default value is 60 sec.
     api = tweepy.API(auth)
 
     tweets = api.search(q=query.term, lang = 'en', max_id = max_id, count = num_tweets)
@@ -168,13 +218,24 @@ def search_tweets(query, num_tweets, max_id = None, update_db = []):
             min_id = tweet.id
         if update_db != []:
             update_tweets_table(update_db[0], update_db[1], update_db[2], tweet.text.replace('"', "'"), tweet.created_at)
+    # min_id - 1 will be thee maximum tweet ID for subsequent API connections.
     return min_id - 1 
 
 def collect_tweets(query, total_tweets):
+    '''
+    This function works around the search API limit of 100 tweets per 
+    connection and allowst the user to collect a larger amount of unique tweets. 
+    Note that there is still an API limit of 180 connections per 15 minutes.
+
+    Inputs:
+        query: a Query object
+        total_tweets: an number specifying the total number of tweets desired.
+            If this number is not a multiple of 100, it will be rounded to
+            the hundreds digit.
+    '''
     max_id = None
     n = total_tweets // 100
     for i in range(n):
-    #while query.num_tweets < total_tweets:
         try:
             max_id = search_tweets(query, 100, max_id = max_id)
         except:
