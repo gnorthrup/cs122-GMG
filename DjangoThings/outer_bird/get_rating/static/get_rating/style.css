@@ -5,6 +5,16 @@ html {
 	-o-background-size: cover;
 	background-size: cover;
 }
+
+.darken {
+  background-image: 
+    linear-gradient(
+      rgba(0, 0, 0, 0.5),
+      rgba(0, 0, 0, 0.5)
+    ),
+    url("images/background.jpg");
+}
+
 h1 {
     font-family:  Futura, 'Trebuchet MS', Arial, sans-serif;
 	color: #66ccff;

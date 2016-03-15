@@ -40,11 +40,11 @@
 {% endif %}
 
 {% for tweet in top_tweets|safeseq %}
-    {{tweet}}
-{% endfor}
+    {{tweet.text}}
+{% endfor %}
 
 {% for tweet in bottom_tweets|safeseq %}
-    {{tweet}}
-{% endfor}
+    {{tweet.text}}
+{% endfor %}
 
 {% endblock %}
